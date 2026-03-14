@@ -1,191 +1,313 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
 import Logo from "./../../assets/images/logo3.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { toast } from "react-toastify";
-import { BiMenu } from "react-icons/bi";
+import { BiMenu, BiUser, BiLogOut, BiHome, BiMap, BiImage, BiEnvelope, BiCalendar, BiPlus, BiBookmark } from "react-icons/bi";
 import { IoClose } from "react-icons/io5";
 
 const Header = () => {
   const headerRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, dispatch, role } = useContext(AuthContext);
   const [isMenuOpen, setMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const lastScrollTop = useRef(0);
+
+  // Handle scroll effects
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollTop = window.pageYOffset;
+      
+      // Update scrolled state for background change
+      setIsScrolled(currentScrollTop > 20);
+      
+      // Hide/show header on scroll direction
+      if (currentScrollTop > lastScrollTop.current && currentScrollTop > 100) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+      
+      lastScrollTop.current = currentScrollTop;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
     handleMenuToggle();
     navigate("/home");
-    toast.info("Logged Out");
+    toast.success("Successfully logged out!");
   };
-
-  useEffect(() => {
-    let lastScrollTop = window.pageYOffset;
-    const header = headerRef.current;
-
-    const handleWheel = (event) => {
-      const currentScrollTop = window.pageYOffset;
-
-      if (event.deltaY > 0) {
-        // Scrolling down
-        header.classList.add("hidden");
-      } else {
-        // Scrolling up
-        header.classList.remove("hidden");
-      }
-
-      lastScrollTop = currentScrollTop;
-    };
-
-    window.addEventListener("wheel", handleWheel);
-
-    return () => {
-      window.removeEventListener("wheel", handleWheel);
-    };
-  }, []);
 
   const handleMenuToggle = () => {
     setMenuOpen(!isMenuOpen);
+    // Prevent body scroll when menu is open
+    if (!isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  };
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
+
+  // Navigation items with icons
+  const navItems = {
+    user: [
+      { path: "/home", label: "Home", icon: BiHome },
+      { path: "/tours", label: "Tours", icon: BiMap },
+      { path: "/about", label: "Gallery", icon: BiImage },
+      { path: "/contact", label: "Contact", icon: BiEnvelope },
+    ],
+    admin: [
+      { path: "/all-booking", label: "Bookings", icon: BiBookmark },
+      { path: "/all-tours", label: "Tours", icon: BiMap },
+      { path: "/create", label: "Create", icon: BiPlus },
+    ]
+  };
+
+  const currentNavItems = role === "admin" ? navItems.admin : navItems.user;
+
+  const isActivePath = (path) => {
+    return location.pathname === path;
   };
 
   return (
-    <header ref={headerRef} className="transition-all shadow-md duration-300">
-      <nav className="container mx-auto px-5 flex justify-between items-center py-2">
-        {role === "admin" ? (
-          <div className="h-8 md:h-12 md:hidden">
-            <img src={Logo} alt="" className="h-full" />
-          </div>
-        ) : (
-          <div className="h-8 md:h-12">
-            <Link to={"/"}>
-              <img src={Logo} alt="" className="h-full" />
-            </Link>
-          </div>
-        )}
-
-        <div className="flex gap-2 md:hidden">
-          {user ? (
-            <div className="flex gap-3 items-center">
-              <Link
-                className="text-[18px] font-semibold text-BaseColor rounded hover:text-BHoverColor cursor-pointer"
-                to={role === "user" && "/my-account"}
-              >
-                {user.username}
-              </Link>
+    <>
+      <header
+        ref={headerRef}
+        className={`fixed w-full z-50 transition-all duration-500 ${
+          isScrolled 
+            ? "bg-white/90 backdrop-blur-md shadow-lg py-2" 
+            : "bg-white/80 backdrop-blur-sm py-4"
+        } ${isVisible ? "translate-y-0" : "-translate-y-full"}`}
+      >
+        <nav className="container mx-auto px-4 md:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
+            {/* Logo with animation */}
+            <div className="relative group">
+              {role === "admin" ? (
+                <div className="h-10 md:h-12 md:hidden transform transition-transform group-hover:scale-105">
+                  <img src={Logo} alt="Logo" className="h-full w-auto" />
+                </div>
+              ) : (
+                <Link to={"/"} className="block">
+                  <div className="h-10 md:h-12 transform transition-transform hover:scale-105">
+                    <img src={Logo} alt="Logo" className="h-full w-auto" />
+                  </div>
+                </Link>
+              )}
             </div>
-          ) : null}
-          <BiMenu
-            className="w-8 h-8 cursor-pointer"
-            onClick={handleMenuToggle}
-          />
-        </div>
 
-        {isMenuOpen && (
-          <div className="md:hidden fixed text-center top-0 h-screen right-0 w-2/3 bg-gray-100 duration-300 p-4 shadow-md z-40">
-            <IoClose
-              className="w-8 h-8 cursor-pointer absolute top-4 right-0 mr-6 text-gray-600 hover:text-black"
-              onClick={handleMenuToggle}
-            />
-            <ul className="flex flex-col item-center h-full justify-center gap-10">
-              {role !== "admin" && (
-                <>
-                  <Link to="/home" onClick={handleMenuToggle}>
-                    Home
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-1">
+              {currentNavItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`relative px-4 py-2 mx-1 rounded-full text-sm font-medium transition-all duration-300 group ${
+                      isActivePath(item.path)
+                        ? "text-blue-600 bg-blue-50"
+                        : "text-gray-700 hover:text-blue-600 hover:bg-blue-50/50"
+                    }`}
+                  >
+                    <span className="flex items-center space-x-2">
+                      <Icon className="w-4 h-4" />
+                      <span>{item.label}</span>
+                    </span>
+                    {isActivePath(item.path) && (
+                      <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full"></span>
+                    )}
                   </Link>
-                  <Link to="/tours" onClick={handleMenuToggle}>
-                    Tours
-                  </Link>
-                  <Link to="/about" onClick={handleMenuToggle}>
-                    Gallery
-                  </Link>
-                  <Link to="/contact" onClick={handleMenuToggle}>
-                    Contact
-                  </Link>
-                </>
-              )}
-              {role === "admin" && (
-                <>
-                  <Link to="/all-booking" onClick={handleMenuToggle}>
-                    Bookings
-                  </Link>
-                  <Link to="/all-tours" onClick={handleMenuToggle}>
-                    Tours
-                  </Link>
-                  <Link to="/create" onClick={handleMenuToggle}>
-                    Create
-                  </Link>
-                </>
-              )}
+                );
+              })}
+            </div>
+
+            {/* Desktop Right Section */}
+            <div className="hidden md:flex items-center space-x-3">
               {user ? (
-                <button
-                  onClick={handleLogout}
-                  className="px-6 py-2 bg-black text-white rounded mx-auto hover:bg-gray-800"
-                >
-                  Logout
-                </button>
-              ) : null}
-              {user ? null : (
-                <div className="flex items-center justify-center gap-4">
-                  <Link to="/login" onClick={handleMenuToggle}>
-                    <button className="text-BaseColor rounded hover:text-BHoverColor">
+                <div className="flex items-center space-x-3">
+                  <Link
+                    to={role === "user" ? "/my-account" : "#"}
+                    className="flex items-center space-x-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 group"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center text-white group-hover:shadow-lg transform group-hover:scale-105 transition-all duration-300">
+                      <BiUser className="w-5 h-5" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                      {user.username}
+                    </span>
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center space-x-2 px-4 py-2 rounded-full text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300 group"
+                  >
+                    <BiLogOut className="w-5 h-5 transform group-hover:rotate-12 transition-transform" />
+                    <span className="text-sm font-medium">Logout</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Link to="/login">
+                    <button className="px-5 py-2 rounded-full text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300">
                       Login
                     </button>
                   </Link>
-                  <Link to="/register" onClick={handleMenuToggle}>
-                    <button className="btn">Register</button>
+                  <Link to="/register">
+                    <button className="px-5 py-2 rounded-full text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
+                      Register
+                    </button>
                   </Link>
                 </div>
               )}
-            </ul>
-          </div>
-        )}
+            </div>
 
-        {role === "admin" ? (
-          <ul className="md:flex hidden space-x-8">
-            <Link to="/all-booking">Bookings</Link>
-            <Link to="/all-tours">Tours</Link>
-            <Link to="/create">Create</Link>
-          </ul>
-        ) : (
-          <ul className="md:flex hidden space-x-4">
-            <Link to="/home">Home</Link>
-            <Link to="/tours">Tours</Link>
-            <Link to="/about">Gallery</Link>
-            <Link to="/contact">Contact</Link>
-          </ul>
-        )}
-
-        <div className="md:flex hidden items-center space-x-4">
-          {user ? (
-            <div className="flex gap-3 items-center">
-              <Link
-                className="text-[18px] font-semibold text-BaseColor rounded hover:text-BHoverColor cursor-pointer"
-                to={role === "user" && "/my-account"}
-              >
-                {user.username}
-              </Link>
+            {/* Mobile Menu Button */}
+            <div className="flex items-center space-x-3 md:hidden">
+              {user && (
+                <Link
+                  to={role === "user" ? "/my-account" : "#"}
+                  className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center text-white shadow-md"
+                >
+                  <BiUser className="w-5 h-5" />
+                </Link>
+              )}
               <button
-                onClick={handleLogout}
-                className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+                onClick={handleMenuToggle}
+                className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-300"
               >
-                Logout
+                {isMenuOpen ? (
+                  <IoClose className="w-6 h-6 text-gray-700" />
+                ) : (
+                  <BiMenu className="w-6 h-6 text-gray-700" />
+                )}
               </button>
             </div>
-          ) : (
-            <>
-              <Link to="/login">
-                <button className="px-4 py-2 text-BaseColor rounded hover:text-BHoverColor">
-                  Login
+          </div>
+        </nav>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      <div
+        className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-500 md:hidden ${
+          isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={handleMenuToggle}
+      />
+
+      {/* Mobile Menu Panel */}
+      <div
+        className={`fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-500 ease-out md:hidden ${
+          isMenuOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex flex-col h-full">
+          {/* Mobile Menu Header */}
+          <div className="flex items-center justify-between p-6 border-b border-gray-100">
+            <div className="h-8">
+              <img src={Logo} alt="Logo" className="h-full w-auto" />
+            </div>
+            <button
+              onClick={handleMenuToggle}
+              className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-300"
+            >
+              <IoClose className="w-6 h-6 text-gray-700" />
+            </button>
+          </div>
+
+          {/* Mobile Menu Content */}
+          <div className="flex-1 overflow-y-auto py-6">
+            <ul className="space-y-2 px-4">
+              {currentNavItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = isActivePath(item.path);
+                
+                return (
+                  <li key={item.path}>
+                    <Link
+                      to={item.path}
+                      onClick={handleMenuToggle}
+                      className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+                        isActive
+                          ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600"
+                          : "text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      <Icon className={`w-5 h-5 ${isActive ? "text-blue-600" : "text-gray-400"}`} />
+                      <span className="text-sm font-medium">{item.label}</span>
+                      {isActive && (
+                        <span className="ml-auto w-2 h-2 bg-blue-600 rounded-full"></span>
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          {/* Mobile Menu Footer */}
+          <div className="p-6 border-t border-gray-100">
+            {user ? (
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3 px-4 py-3 bg-gray-50 rounded-xl">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center text-white">
+                    <BiUser className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{user.username}</p>
+                    <p className="text-xs text-gray-500">{role}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-xl text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300"
+                >
+                  <BiLogOut className="w-5 h-5" />
+                  <span className="text-sm font-medium">Logout</span>
                 </button>
-              </Link>
-              <Link to="/register">
-                <button className="btn">Register</button>
-              </Link>
-            </>
-          )}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <Link
+                  to="/login"
+                  onClick={handleMenuToggle}
+                  className="block w-full"
+                >
+                  <button className="w-full px-4 py-3 rounded-xl text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 transition-all duration-300">
+                    Login
+                  </button>
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={handleMenuToggle}
+                  className="block w-full"
+                >
+                  <button className="w-full px-4 py-3 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md transition-all duration-300">
+                    Register
+                  </button>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
-      </nav>
-    </header>
+      </div>
+
+      {/* Spacer to prevent content from hiding under fixed header */}
+      <div className="h-20"></div>
+    </>
   );
 };
 
