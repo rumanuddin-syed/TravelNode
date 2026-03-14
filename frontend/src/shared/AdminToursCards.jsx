@@ -1,40 +1,17 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import BASE_URL from "../utils/config";
-import useFetch from "../hooks/useFetch";
 import { toast } from "react-toastify";
-import UpdateTours from "../Dashboard/AdminPanel/UpdateTour";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { FaEdit, FaRegEdit } from "react-icons/fa";
-import { AiOutlineDelete } from "react-icons/ai";
+import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 
 const AdminToursCards = ({ tour }) => {
   const { token } = useContext(AuthContext);
-
-  const {
-    title,
-    city,
-    address,
-    price,
-    maxGroupSize,
-    desc,
-    featured,
-    reviews,
-    updatedAt,
-    photo,
-    _id,
-  } = tour;
+  const { title, city, maxGroupSize, featured, reviews, photo, _id } = tour;
 
   const handleDelete = () => {
-    // Display a confirmation dialog
-    const isConfirmed = window.confirm(
-      "Are you sure you want to delete this Tour Permanently?"
-    );
-
-    // Check if the user confirmed the action
-    if (isConfirmed) {
-      // Code to delete the item
+    if (window.confirm("Are you sure you want to delete this Tour permanently?")) {
       deleteTour();
     }
   };
@@ -53,7 +30,8 @@ const AdminToursCards = ({ tour }) => {
       if (!response.ok) {
         toast.error(message);
       } else {
-        alert(message);
+        toast.success(message);
+        // Optionally refresh the list – here we reload for simplicity
         window.location.reload();
       }
     } catch (err) {
@@ -62,45 +40,48 @@ const AdminToursCards = ({ tour }) => {
   };
 
   return (
-    <>
-      <tbody className="rounded overflow-hidden py-8 px-3 bg-gray-100 shadow-lg ">
-        <tr className="w-full text-center overflow-hidden px-4">
-          <td className="py-2 object-cover overflow-hidden px-2">
-            <img
-              src={photo}
-              alt=""
-              className="object-cover h-[65px] w-[95px] rounded-xl py-2 px-2"
-            />{" "}
-          </td>
-          {/* <td className='tdFont'>{photo}</td> */}
-          <td className="tableData text-start">{title}</td>
-          <td className="tdFont">{city}</td>
-          <td className="tdFont">{featured === "true" ? "Yes" : "No"}</td>
-          <td className="tdFont">{maxGroupSize}</td>
-          <td className="tdFont">{reviews.length}</td>
-          {/* <td>
-            <Link to={`/tours/${tour._id}`} className="Greenbtn  my-2 mx-2 ">
-              View
-            </Link>
-          </td> */}
-          <td className="flex gap-2 w-full my-6">
-            <Link
-              to={`/update-tour/${tour._id}`}
-              className="text-blue-500 hover:scale-125 hover:rotate-12 duration-200 hover:text-blue-900"
-            >
-              <FaEdit size={25} />
-            </Link>
-            /
-            <button
-              onClick={handleDelete}
-              className="text-red-500 hover:scale-125 hover:rotate-12 duration-200 hover:text-red-900"
-            >
-              <MdDelete size={25} />
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </>
+    <tr className="hover:bg-gray-50 transition-colors">
+      <td className="px-4 py-3">
+        <img
+          src={photo}
+          alt={title}
+          className="w-16 h-16 object-cover rounded-lg shadow-sm"
+        />
+      </td>
+      <td className="px-4 py-3 text-sm font-medium text-gray-800">{title}</td>
+      <td className="px-4 py-3 text-sm text-gray-600">{city}</td>
+      <td className="px-4 py-3">
+        <span
+          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+            featured === "true"
+              ? "bg-green-100 text-green-800"
+              : "bg-gray-100 text-gray-600"
+          }`}
+        >
+          {featured ? "Yes" : "No"}
+        </span>
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-600">{maxGroupSize}</td>
+      <td className="px-4 py-3 text-sm text-gray-600">{reviews?.length || 0}</td>
+      <td className="px-4 py-3">
+        <div className="flex items-center gap-2">
+          <Link
+            to={`/update-tour/${_id}`}
+            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            title="Edit"
+          >
+            <FaEdit size={18} />
+          </Link>
+          <button
+            onClick={handleDelete}
+            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            title="Delete"
+          >
+            <MdDelete size={18} />
+          </button>
+        </div>
+      </td>
+    </tr>
   );
 };
 
