@@ -10,7 +10,7 @@ const Booking = ({ price, title, reviewsArray, avgRating }) => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const [data, setData] = useState({
-    userId: user && user._id,
+    userId: user?._id || "",
     tourName: title,
     fullName: "",
     totalPrice: price,
@@ -19,43 +19,40 @@ const Booking = ({ price, title, reviewsArray, avgRating }) => {
     bookAt: currentDate,
     date: "",
   });
-  const calculatedPrice = data.maxGroupSize * price;
 
   useEffect(() => {
-    setData((prevData) => ({
-      ...prevData,
+    setData((prev) => ({
+      ...prev,
       tourName: title,
-      totalPrice: calculatedPrice,
+      totalPrice: prev.maxGroupSize * price,
     }));
-  }, [title, calculatedPrice]);
+  }, [title, price]);
 
   const handleChange = (e) => {
-    setData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
+    const value = e.target.type === "number" ? Number(e.target.value) : e.target.value;
+    setData((prev) => ({ ...prev, [e.target.id]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!user) {
+      toast.error("Please sign in to book");
+      return;
+    }
+
     try {
-      if (user) {
-        const response = await fetch(`${BASE_URL}/booking`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
-        console.log(data);
-        const result = await response.json();
-        if (response.ok) {
-          toast.success("Booked");
-          navigate("/booked");
-        } else {
-          toast.error(result.message);
-        }
-      }
-      if (!user || user === null || user === undefined) {
-        toast.error("Please Sign In first");
+      const response = await fetch(`${BASE_URL}/booking`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        toast.success("Booking confirmed!");
+        navigate("/booked");
+      } else {
+        toast.error(result.message);
       }
     } catch (err) {
       toast.error("Server not responding");
@@ -63,85 +60,82 @@ const Booking = ({ price, title, reviewsArray, avgRating }) => {
   };
 
   return (
-    <div className="">
-      <div className="flex justify-between items-center ">
-        <h3 className="text-[25px] md:text-[40px]  font-bold mb-4 text-start text-BaseColor">
-          ${price} <span>/per person</span>
-        </h3>
-        <div className="flex items-center gap-2">
-          <i>
-            <FaStar />
-          </i>
-          <span className="flex gap-1">
-            <div>{avgRating}</div>
-            <div>({reviewsArray.length})</div>
-          </span>
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <span className="text-3xl font-bold text-BaseColor">${price}</span>
+          <span className="text-gray-500"> / person</span>
+        </div>
+        <div className="flex items-center space-x-1">
+          <FaStar className="text-yellow-400" />
+          <span className="font-medium">{avgRating}</span>
+          <span className="text-gray-500">({reviewsArray.length})</span>
         </div>
       </div>
 
-      <div className="py-6 space-y-4">
-        <h5 className="text-[18px] md:text-2xl font-semibold">
-          Booking Information
-        </h5>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <input
-              className="booking_input"
-              type="text"
-              placeholder="Full Name"
-              id="fullName"
-              required
-              onChange={handleChange}
-            />
+      <h3 className="text-xl font-semibold mb-4">Booking Information</h3>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="text"
+          id="fullName"
+          placeholder="Full Name"
+          value={data.fullName}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
+        />
+        <input
+          type="tel"
+          id="phone"
+          placeholder="Phone Number"
+          value={data.phone}
+          onChange={handleChange}
+          required
+          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
+        />
+        <input
+          type="number"
+          id="maxGroupSize"
+          placeholder="Number of People"
+          value={data.maxGroupSize}
+          onChange={handleChange}
+          min="1"
+          required
+          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
+        />
+        <input
+          type="date"
+          id="date"
+          value={data.date}
+          onChange={handleChange}
+          min={currentDate}
+          required
+          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
+        />
+
+        <div className="border-t border-gray-100 pt-4 mt-4">
+          <div className="flex justify-between mb-2">
+            <span className="text-gray-600">Base Price</span>
+            <span className="font-medium">${price}</span>
           </div>
-          <div>
-            <input
-              className="booking_input"
-              type="text"
-              placeholder="Contact No."
-              id="phone"
-              required
-              onChange={handleChange}
-            />
+          <div className="flex justify-between mb-2">
+            <span className="text-gray-600">Total People</span>
+            <span className="font-medium">{data.maxGroupSize}</span>
           </div>
-          <div>
-            <input
-              className="booking_input"
-              type="number"
-              placeholder="Number of Persons?"
-              id="maxGroupSize"
-              required
-              onChange={handleChange}
-            />
+          <div className="flex justify-between text-lg font-bold mt-4 pt-2 border-t border-gray-200">
+            <span>Total</span>
+            <span className="text-BaseColor">${data.maxGroupSize * price}</span>
           </div>
-          <div>
-            <input
-              className="booking_input"
-              type="date"
-              id="date"
-              required
-              onChange={handleChange}
-            />
-          </div>
-          <div className="mt-12">
-            <div className="flex my-4 justify-between">
-              <span>Gross Price: </span>
-              <p className="font-semibold">Rs. {price}</p>
-            </div>
-            <div className="flex my-4 border-b-[1px] pb-2 border-black justify-between">
-              <span>GST: </span>
-              <p className="font-semibold">0%</p>
-            </div>
-            <div className="flex my-6 justify-between font-bold text-lg">
-              <span>Net Price: </span>
-              <p>Rs. {calculatedPrice}</p>
-            </div>
-          </div>
-          <button type="submit" className="btn w-full">
-            Book
-          </button>
-        </form>
-      </div>
+        </div>
+
+        <button
+          type="submit"
+          className="w-full py-3 bg-gradient-to-r from-BaseColor to-BHoverColor text-white font-semibold rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
+        >
+          Book Now
+        </button>
+      </form>
     </div>
   );
 };
