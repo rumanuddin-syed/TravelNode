@@ -18,28 +18,33 @@ const Tours = () => {
   }, [page, tourCount, tours]);
 
   return (
-    <div>
+    <div className="bg-gray-50 min-h-screen">
       <SearchTours />
-      <section className="min-h-screen py-8 px-6 md:px-12">
-        <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {tours?.map((tour) => (
-            <div key={tour._id}>
-              <TourCard tour={tour} />
-            </div>
+            <TourCard key={tour._id} tour={tour} />
           ))}
         </div>
-        <div className="flex pagination items-center justify-center mt-8 gap-3">
-          {pageCount &&
-            [...Array(pageCount).keys()].map((number) => (
-              <span
+
+        {/* Pagination */}
+        {pageCount > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-12">
+            {[...Array(pageCount).keys()].map((number) => (
+              <button
                 key={number}
                 onClick={() => setPage(number)}
-                className={page === number ? "active_page" : "spn"}
+                className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-300 ${
+                  page === number
+                    ? "bg-gradient-to-r from-BaseColor to-BHoverColor text-white shadow-md"
+                    : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                }`}
               >
                 {number + 1}
-              </span>
+              </button>
             ))}
-        </div>
+          </div>
+        )}
       </section>
     </div>
   );
