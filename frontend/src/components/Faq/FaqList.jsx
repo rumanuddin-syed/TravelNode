@@ -1,13 +1,15 @@
 import React from 'react'
 import FaqCard from './FaqCard'
-import { faqs} from './../../assets/data/faqs'
+import { faqs } from './../../assets/data/faqs'
 
 const FaqList = () => {
   return (
-    <ul className="mt-[38px]">
-      {faqs.map((item,index)=>(<FaqCard key={index} item={item} />))}
-    </ul>
-)
+    <div className="space-y-4">
+      {faqs.map((item, index) => (
+        <FaqCard key={index} item={item} index={index} />
+      ))}
+    </div>
+  )
 }
 
 export default FaqList
