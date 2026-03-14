@@ -71,14 +71,14 @@
 
 .mobheading {
   font-size: 25px;
-  color: var(--tw-color-BaseColor, #B71C1C);
+  color: #B71C1C;
   font-weight: bold;
   text-align: center;
 }
 
 .heading {
   font-size: 45px;
-  color: var(--tw-color-BaseColor, #B71C1C);
+  color: #B71C1C;
   font-weight: bold;
   text-align: center;
 }

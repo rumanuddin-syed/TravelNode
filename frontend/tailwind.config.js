@@ -4,14 +4,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Your existing colors (preserved)
+        // Your existing brand colors
         BaseColor: "#B71C1C",
         GreenColor: "#388E3C",
         GrayColor: "#455A64",
         PurpleColor: "#880E4F",
         BHoverColor: "#D32F2F",
         
-        // New modern colors (added)
+        // Extended red palette (optional)
         primary: {
           50: '#fef2f2',
           100: '#fee2e2',
@@ -53,17 +53,16 @@ export default {
         info: "#3b82f6",
       },
       fontFamily: {
-        // Your existing fonts (preserved)
+        // Your existing fonts
         cursiveFont: ["Island Moments", "cursive"],
         paraFont: ["Kalam", "cursive"],
         
-        // New modern fonts (added)
+        // Modern defaults
         sans: ["Poppins", "Roboto", "sans-serif"],
         display: ["Montserrat", "sans-serif"],
         handwritten: ["Kalam", "cursive"],
       },
       animation: {
-        // New animations
         'blob': 'blob 7s infinite',
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'bounce-slow': 'bounce 2s infinite',
@@ -132,4 +131,4 @@ export default {
     },
   },
   plugins: [],
-};
+}

@@ -16,8 +16,8 @@ const TourCard = ({ tour }) => {
       {featured && (
         <div className="absolute top-4 left-4 z-10">
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full blur-sm opacity-75 animate-pulse"></div>
-            <span className="relative px-4 py-1.5 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold rounded-full">
+            <div className="absolute inset-0 bg-gradient-to-r from-BaseColor to-BHoverColor rounded-full blur-sm opacity-75 animate-pulse"></div>
+            <span className="relative px-4 py-1.5 bg-gradient-to-r from-BaseColor to-BHoverColor text-white text-xs font-bold rounded-full">
               Featured
             </span>
           </div>
@@ -30,9 +30,9 @@ const TourCard = ({ tour }) => {
         className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group/like"
       >
         {isLiked ? (
-          <BsHeartFill className="w-5 h-5 text-red-500 animate-pulse" />
+          <BsHeartFill className="w-5 h-5 text-BaseColor animate-pulse" />
         ) : (
-          <BsHeart className="w-5 h-5 text-gray-600 group-hover/like:text-red-500 transition-colors" />
+          <BsHeart className="w-5 h-5 text-gray-600 group-hover/like:text-BaseColor transition-colors" />
         )}
       </button>
 
@@ -57,7 +57,7 @@ const TourCard = ({ tour }) => {
         {/* Location and Rating */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-1 text-gray-500 text-sm">
-            <FaMapMarkerAlt className="w-3 h-3 text-blue-500" />
+            <FaMapMarkerAlt className="w-3 h-3 text-BaseColor" />
             <span>{city}</span>
           </div>
           <div className="flex items-center space-x-1 bg-yellow-50 px-2 py-1 rounded-full">
@@ -69,7 +69,7 @@ const TourCard = ({ tour }) => {
 
         {/* Title */}
         <Link to={`/tours/${_id}`}>
-          <h3 className="text-lg font-bold text-gray-800 mb-2 hover:text-blue-600 transition-colors line-clamp-1">
+          <h3 className="text-lg font-bold text-gray-800 mb-2 hover:text-BaseColor transition-colors line-clamp-1">
             {title}
           </h3>
         </Link>
@@ -82,11 +82,11 @@ const TourCard = ({ tour }) => {
         {/* Tour Details */}
         <div className="flex items-center space-x-4 mb-4">
           <div className="flex items-center space-x-1 text-sm text-gray-500">
-            <FaClock className="w-3 h-3 text-blue-500" />
+            <FaClock className="w-3 h-3 text-BaseColor" />
             <span>{distance} km</span>
           </div>
           <div className="flex items-center space-x-1 text-sm text-gray-500">
-            <FaUsers className="w-3 h-3 text-blue-500" />
+            <FaUsers className="w-3 h-3 text-BaseColor" />
             <span>Up to {maxGroupSize}</span>
           </div>
         </div>
@@ -95,16 +95,16 @@ const TourCard = ({ tour }) => {
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
           <div>
             <span className="text-xs text-gray-500">Starting from</span>
-            <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <p className="text-2xl font-bold bg-gradient-to-r from-BaseColor to-BHoverColor bg-clip-text text-transparent">
               Rs. {price}
             </p>
           </div>
           <Link
             to={`/tours/${_id}`}
-            className="group/btn relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:shadow-lg transition-all duration-300"
+            className="group/btn relative overflow-hidden bg-gradient-to-r from-BaseColor to-BHoverColor text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:shadow-lg transition-all duration-300"
           >
             <span className="relative z-10">Book Now</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 opacity-0 group-hover/btn:opacity-100 transition-opacity"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-BHoverColor to-BaseColor opacity-0 group-hover/btn:opacity-100 transition-opacity"></div>
           </Link>
         </div>
       </div>

@@ -21,7 +21,7 @@ const Header = () => {
     const handleScroll = () => {
       const currentScrollTop = window.pageYOffset;
       
-      // Update scrolled state for background change
+      // Update scrolled state for background change (only for shadow)
       setIsScrolled(currentScrollTop > 20);
       
       // Hide/show header on scroll direction
@@ -87,10 +87,8 @@ const Header = () => {
     <>
       <header
         ref={headerRef}
-        className={`fixed w-full z-50 transition-all duration-500 ${
-          isScrolled 
-            ? "bg-white/90 backdrop-blur-md shadow-lg py-2" 
-            : "bg-white/80 backdrop-blur-sm py-4"
+        className={`fixed w-full z-50 transition-all duration-500 bg-white shadow-sm ${
+          isScrolled ? "shadow-md py-2" : "py-4"
         } ${isVisible ? "translate-y-0" : "-translate-y-full"}`}
       >
         <nav className="container mx-auto px-4 md:px-6 lg:px-8">
@@ -120,8 +118,8 @@ const Header = () => {
                     to={item.path}
                     className={`relative px-4 py-2 mx-1 rounded-full text-sm font-medium transition-all duration-300 group ${
                       isActivePath(item.path)
-                        ? "text-blue-600 bg-blue-50"
-                        : "text-gray-700 hover:text-blue-600 hover:bg-blue-50/50"
+                        ? "text-BaseColor bg-BaseColor/10"
+                        : "text-gray-700 hover:text-BaseColor hover:bg-BaseColor/10"
                     }`}
                   >
                     <span className="flex items-center space-x-2">
@@ -129,7 +127,7 @@ const Header = () => {
                       <span>{item.label}</span>
                     </span>
                     {isActivePath(item.path) && (
-                      <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full"></span>
+                      <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-BaseColor rounded-full"></span>
                     )}
                   </Link>
                 );
@@ -142,9 +140,9 @@ const Header = () => {
                 <div className="flex items-center space-x-3">
                   <Link
                     to={role === "user" ? "/my-account" : "#"}
-                    className="flex items-center space-x-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 group"
+                    className="flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-300 group"
                   >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center text-white group-hover:shadow-lg transform group-hover:scale-105 transition-all duration-300">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-BaseColor to-BHoverColor flex items-center justify-center text-white group-hover:shadow-lg transform group-hover:scale-105 transition-all duration-300">
                       <BiUser className="w-5 h-5" />
                     </div>
                     <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
@@ -153,7 +151,7 @@ const Header = () => {
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center space-x-2 px-4 py-2 rounded-full text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300 group"
+                    className="flex items-center space-x-2 px-4 py-2 rounded-full text-gray-600 hover:text-BaseColor hover:bg-BaseColor/10 transition-all duration-300 group"
                   >
                     <BiLogOut className="w-5 h-5 transform group-hover:rotate-12 transition-transform" />
                     <span className="text-sm font-medium">Logout</span>
@@ -162,12 +160,12 @@ const Header = () => {
               ) : (
                 <div className="flex items-center space-x-2">
                   <Link to="/login">
-                    <button className="px-5 py-2 rounded-full text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300">
+                    <button className="px-5 py-2 rounded-full text-sm font-medium text-gray-700 hover:text-BaseColor hover:bg-BaseColor/10 transition-all duration-300">
                       Login
                     </button>
                   </Link>
                   <Link to="/register">
-                    <button className="px-5 py-2 rounded-full text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
+                    <button className="px-5 py-2 rounded-full text-sm font-medium text-white bg-gradient-to-r from-BaseColor to-BHoverColor hover:from-BaseColor/90 hover:to-BHoverColor/90 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
                       Register
                     </button>
                   </Link>
@@ -180,19 +178,19 @@ const Header = () => {
               {user && (
                 <Link
                   to={role === "user" ? "/my-account" : "#"}
-                  className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center text-white shadow-md"
+                  className="w-8 h-8 rounded-full bg-gradient-to-r from-BaseColor to-BHoverColor flex items-center justify-center text-white shadow-md"
                 >
                   <BiUser className="w-5 h-5" />
                 </Link>
               )}
               <button
                 onClick={handleMenuToggle}
-                className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-300"
+                className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors duration-300"
               >
                 {isMenuOpen ? (
-                  <IoClose className="w-6 h-6 text-gray-700" />
+                  <IoClose className="w-6 h-6" />
                 ) : (
-                  <BiMenu className="w-6 h-6 text-gray-700" />
+                  <BiMenu className="w-6 h-6" />
                 )}
               </button>
             </div>
@@ -242,14 +240,14 @@ const Header = () => {
                       onClick={handleMenuToggle}
                       className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                         isActive
-                          ? "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600"
+                          ? "bg-gradient-to-r from-BaseColor/10 to-BHoverColor/10 text-BaseColor"
                           : "text-gray-700 hover:bg-gray-50"
                       }`}
                     >
-                      <Icon className={`w-5 h-5 ${isActive ? "text-blue-600" : "text-gray-400"}`} />
+                      <Icon className={`w-5 h-5 ${isActive ? "text-BaseColor" : "text-gray-400"}`} />
                       <span className="text-sm font-medium">{item.label}</span>
                       {isActive && (
-                        <span className="ml-auto w-2 h-2 bg-blue-600 rounded-full"></span>
+                        <span className="ml-auto w-2 h-2 bg-BaseColor rounded-full"></span>
                       )}
                     </Link>
                   </li>
@@ -263,7 +261,7 @@ const Header = () => {
             {user ? (
               <div className="space-y-3">
                 <div className="flex items-center space-x-3 px-4 py-3 bg-gray-50 rounded-xl">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center text-white">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-BaseColor to-BHoverColor flex items-center justify-center text-white">
                     <BiUser className="w-6 h-6" />
                   </div>
                   <div>
@@ -273,7 +271,7 @@ const Header = () => {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-xl text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300"
+                  className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-xl text-gray-600 hover:text-BaseColor hover:bg-BaseColor/10 transition-all duration-300"
                 >
                   <BiLogOut className="w-5 h-5" />
                   <span className="text-sm font-medium">Logout</span>
@@ -295,7 +293,7 @@ const Header = () => {
                   onClick={handleMenuToggle}
                   className="block w-full"
                 >
-                  <button className="w-full px-4 py-3 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md transition-all duration-300">
+                  <button className="w-full px-4 py-3 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-BaseColor to-BHoverColor hover:from-BaseColor/90 hover:to-BHoverColor/90 shadow-md transition-all duration-300">
                     Register
                   </button>
                 </Link>

@@ -14,9 +14,9 @@ const FeaturedTourList = () => {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="relative">
-          <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+          <div className="w-16 h-16 border-4 border-gray-200 border-t-BaseColor rounded-full animate-spin"></div>
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full animate-pulse"></div>
+            <div className="w-8 h-8 bg-gradient-to-r from-BaseColor to-BHoverColor rounded-full animate-pulse"></div>
           </div>
         </div>
       </div>
@@ -53,7 +53,7 @@ const FeaturedTourList = () => {
           <div className="text-center">
             <Link
               to="/tours"
-              className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-full font-semibold hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 group"
+              className="inline-flex items-center space-x-2 bg-gradient-to-r from-BaseColor to-BHoverColor text-white px-8 py-4 rounded-full font-semibold hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 group"
             >
               <span>View All Tours</span>
               <BsArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -62,8 +62,8 @@ const FeaturedTourList = () => {
         </>
       ) : (
         <div className="text-center py-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-            <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-BaseColor/10 rounded-full mb-4">
+            <svg className="w-8 h-8 text-BaseColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
@@ -71,7 +71,7 @@ const FeaturedTourList = () => {
           <p className="text-gray-600 mb-6">Check back later for new featured tours</p>
           <Link
             to="/tours"
-            className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all duration-300"
+            className="inline-flex items-center space-x-2 bg-gradient-to-r from-BaseColor to-BHoverColor text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all duration-300"
           >
             <span>Browse All Tours</span>
             <BsArrowRight className="w-4 h-4" />
