@@ -51,7 +51,7 @@ const SearchBar = () => {
           {/* Location Input */}
           <div className="relative group">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              <FaMapMarkerAlt className="inline mr-2 text-blue-500" />
+              <FaMapMarkerAlt className="inline mr-2 text-BaseColor" />
               Location
             </label>
             <div className="relative">
@@ -59,16 +59,16 @@ const SearchBar = () => {
                 type="text"
                 placeholder="Where are you going?"
                 ref={cityRef}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-BaseColor focus:ring-2 focus:ring-BaseColor/20 transition-all duration-300 text-black placeholder-black"
               />
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"></div>
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-BaseColor to-BHoverColor opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"></div>
             </div>
           </div>
 
           {/* Min Price Input */}
           <div className="relative group">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              <IoIosPricetags className="inline mr-2 text-blue-500" />
+              <IoIosPricetags className="inline mr-2 text-BaseColor" />
               Min Price
             </label>
             <div className="relative">
@@ -76,16 +76,16 @@ const SearchBar = () => {
                 type="number"
                 placeholder="Min Price"
                 ref={minPriceRef}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-BaseColor focus:ring-2 focus:ring-BaseColor/20 transition-all duration-300 text-black placeholder-black"
               />
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"></div>
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-BaseColor to-BHoverColor opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"></div>
             </div>
           </div>
 
           {/* Max Price Input */}
           <div className="relative group">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              <IoIosPricetags className="inline mr-2 text-blue-500" />
+              <IoIosPricetags className="inline mr-2 text-BaseColor" />
               Max Price
             </label>
             <div className="relative">
@@ -93,9 +93,9 @@ const SearchBar = () => {
                 type="number"
                 placeholder="Max Price"
                 ref={maxPriceRef}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-BaseColor focus:ring-2 focus:ring-BaseColor/20 transition-all duration-300 text-black placeholder-black"
               />
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"></div>
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-BaseColor to-BHoverColor opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"></div>
             </div>
           </div>
 
@@ -104,7 +104,7 @@ const SearchBar = () => {
             <button
               onClick={SubmitHandler}
               disabled={isSearching}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-BaseColor to-BHoverColor text-white px-6 py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSearching ? (
                 <>
@@ -131,7 +131,7 @@ const SearchBar = () => {
                 onClick={() => {
                   cityRef.current.value = city;
                 }}
-                className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-xs text-gray-600 transition-colors"
+                className="px-3 py-1 bg-gray-100 hover:bg-BaseColor hover:text-white rounded-full text-xs text-gray-600 transition-colors"
               >
                 {city}
               </button>

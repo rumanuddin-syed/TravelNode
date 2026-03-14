@@ -12,7 +12,6 @@ import {
   FaHeart,
 } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import Newsletter from "../../shared/Newsletter";
 import { AuthContext } from "../../context/AuthContext";
 
 const Footer = () => {
@@ -42,7 +41,7 @@ const Footer = () => {
 
   return (
     <footer className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-      {/* Decorative top wave */}
+      {/* Decorative top wave - updated fill to match footer */}
       <div className="absolute top-0 left-0 w-full overflow-hidden">
         <svg
           className="relative block w-full h-6"
@@ -52,51 +51,49 @@ const Footer = () => {
           <path
             d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
             className="fill-gray-900"
-          ></path>
+          />
         </svg>
       </div>
 
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 pt-16 pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
           
-          {/* Brand Section - 4 columns on large screens */}
-          <div className="lg:col-span-4 space-y-6">
+          {/* Brand Section */}
+          <div className="space-y-6">
             <div className="space-y-4">
               <div className="relative group inline-block">
-                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-300"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-BaseColor to-BHoverColor rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-300"></div>
                 <img
                   src={Logo}
                   alt="Trips Travels Logo"
                   className="relative h-16 w-auto object-contain"
                 />
               </div>
-              <p className="text-gray-300 text-sm leading-relaxed max-w-md">
+              <p className="text-gray-300 text-sm leading-relaxed">
                 Discover amazing destinations and create unforgettable memories with our curated travel experiences. Your journey begins here.
               </p>
             </div>
 
-            {/* Contact Information with Icons */}
+            {/* Contact Information */}
             <div className="space-y-3">
-              <h3 className="text-lg font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Contact Info
-              </h3>
+              <h3 className="text-lg font-semibold text-BaseColor">Contact Info</h3>
               <div className="space-y-3">
                 <div className="flex items-start space-x-3 group">
-                  <div className="w-8 h-8 rounded-full bg-gray-800/50 flex items-center justify-center group-hover:bg-blue-600/20 transition-colors duration-300">
-                    <FaMapMarkerAlt className="w-4 h-4 text-blue-400" />
+                  <div className="w-8 h-8 rounded-full bg-gray-800/50 flex items-center justify-center group-hover:bg-BaseColor/20 transition-colors duration-300">
+                    <FaMapMarkerAlt className="w-4 h-4 text-BaseColor" />
                   </div>
                   <p className="text-sm text-gray-300">123 Travel Street, Adventure City, AC 12345</p>
                 </div>
                 <div className="flex items-center space-x-3 group">
-                  <div className="w-8 h-8 rounded-full bg-gray-800/50 flex items-center justify-center group-hover:bg-blue-600/20 transition-colors duration-300">
-                    <FaPhone className="w-4 h-4 text-blue-400" />
+                  <div className="w-8 h-8 rounded-full bg-gray-800/50 flex items-center justify-center group-hover:bg-BaseColor/20 transition-colors duration-300">
+                    <FaPhone className="w-4 h-4 text-BaseColor" />
                   </div>
                   <p className="text-sm text-gray-300">+1 (234) 567-890</p>
                 </div>
                 <div className="flex items-center space-x-3 group">
-                  <div className="w-8 h-8 rounded-full bg-gray-800/50 flex items-center justify-center group-hover:bg-blue-600/20 transition-colors duration-300">
-                    <FaEnvelope className="w-4 h-4 text-blue-400" />
+                  <div className="w-8 h-8 rounded-full bg-gray-800/50 flex items-center justify-center group-hover:bg-BaseColor/20 transition-colors duration-300">
+                    <FaEnvelope className="w-4 h-4 text-BaseColor" />
                   </div>
                   <p className="text-sm text-gray-300">info@travelnode.com</p>
                 </div>
@@ -104,11 +101,9 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links - 3 columns on large screens */}
-          <div className="lg:col-span-3 space-y-6">
-            <h3 className="text-lg font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Quick Links
-            </h3>
+          {/* Quick Links */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-BaseColor">Quick Links</h3>
             <ul className="grid grid-cols-2 gap-3">
               {quickLinks.map((link) => (
                 <li key={link.name}>
@@ -116,7 +111,7 @@ const Footer = () => {
                     to={link.path}
                     className="text-sm text-gray-300 hover:text-white transition-all duration-300 hover:translate-x-1 inline-flex items-center group"
                   >
-                    <span className="w-1 h-1 bg-blue-400 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                    <span className="w-1 h-1 bg-BaseColor rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                     {link.name}
                   </Link>
                 </li>
@@ -124,22 +119,10 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Newsletter Section - 5 columns on large screens */}
-          <div className="lg:col-span-5 space-y-6">
+          {/* Social Media & Additional Links */}
+          <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
-                Subscribe to Our Newsletter
-              </h3>
-              <p className="text-sm text-gray-300 mb-4">
-                Get the latest updates on new tours and exclusive offers!
-              </p>
-            </div>
-            
-            <Newsletter />
-
-            {/* Social Media Links */}
-            <div className="space-y-4">
-              <h4 className="text-sm font-medium text-gray-300">Follow Us</h4>
+              <h3 className="text-lg font-semibold text-BaseColor mb-4">Follow Us</h3>
               <div className="flex flex-wrap gap-3">
                 {socialLinks.map((social) => {
                   const Icon = social.icon;
@@ -161,6 +144,13 @@ const Footer = () => {
                 })}
               </div>
             </div>
+
+            {/* Additional Info */}
+            <div className="pt-4">
+              <p className="text-sm text-gray-400">
+                <span className="font-semibold text-BaseColor">TravelNode</span> – Your gateway to unforgettable adventures.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -168,7 +158,7 @@ const Footer = () => {
         <div className="mt-12 pt-6 border-t border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm text-gray-400 flex items-center">
-              &copy; {currentYear} Trips Travels. 
+              &copy; {currentYear} TravelNode. 
               <span className="mx-2">•</span>
               All rights reserved.
             </p>

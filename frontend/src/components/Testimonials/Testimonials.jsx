@@ -77,28 +77,28 @@ const Testimonials = () => {
     ],
   };
 
-  // Custom styles as a separate style tag with string attribute
+  // Custom styles for dots on light background
   const dotStyles = `
-    .testimonial-slider .slick-dots {
+    .testimonial-slider-light .slick-dots {
       bottom: -40px;
     }
-    .testimonial-slider .slick-dots li {
+    .testimonial-slider-light .slick-dots li {
       margin: 0 4px;
     }
-    .testimonial-slider .slick-dots li button {
+    .testimonial-slider-light .slick-dots li button {
       width: 8px;
       height: 8px;
       padding: 0;
     }
-    .testimonial-slider .slick-dots li button:before {
+    .testimonial-slider-light .slick-dots li button:before {
       width: 8px;
       height: 8px;
-      color: rgba(255, 255, 255, 0.5);
+      color: #d1d5db;
       opacity: 1;
     }
-    .testimonial-slider .slick-dots li.slick-active button:before {
+    .testimonial-slider-light .slick-dots li.slick-active button:before {
       width: 20px;
-      color: white;
+      color: #B71C1C;
       opacity: 1;
     }
   `;
@@ -106,13 +106,13 @@ const Testimonials = () => {
   return (
     <div className="relative">
       <style>{dotStyles}</style>
-      <Slider {...settings} className="testimonial-slider">
+      <Slider {...settings} className="testimonial-slider-light">
         {testimonialsData.map((data, index) => (
           <div key={index} className="px-3">
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 group">
+            <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
               {/* Quote icon */}
               <div className="relative mb-6">
-                <FaQuoteLeft className="w-8 h-8 text-white/30 group-hover:text-white/40 transition-colors" />
+                <FaQuoteLeft className="w-8 h-8 text-BaseColor/20" />
               </div>
 
               {/* Rating stars */}
@@ -121,30 +121,30 @@ const Testimonials = () => {
                   <FaStar
                     key={i}
                     className={`w-4 h-4 ${
-                      i < data.rating ? 'text-yellow-400' : 'text-white/20'
+                      i < data.rating ? 'text-yellow-400' : 'text-gray-200'
                     }`}
                   />
                 ))}
               </div>
 
               {/* Testimonial text */}
-              <p className="text-white/90 text-sm leading-relaxed mb-6 line-clamp-4">
+              <p className="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-4">
                 "{data.description}"
               </p>
 
               {/* Author info */}
               <div className="flex items-center space-x-4">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full blur-sm opacity-75"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-BaseColor to-BHoverColor rounded-full blur-sm opacity-50"></div>
                   <img
                     src={data.pic}
                     alt={data.name}
-                    className="relative w-14 h-14 rounded-full object-cover border-2 border-white/30 group-hover:border-white/50 transition-colors"
+                    className="relative w-14 h-14 rounded-full object-cover border-2 border-white"
                   />
                 </div>
                 <div>
-                  <h5 className="text-white font-semibold">{data.name}</h5>
-                  <p className="text-white/60 text-sm">{data.location}</p>
+                  <h5 className="text-gray-900 font-semibold">{data.name}</h5>
+                  <p className="text-gray-500 text-sm">{data.location}</p>
                 </div>
               </div>
             </div>
