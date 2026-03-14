@@ -2,7 +2,7 @@ import React from "react";
 import BASE_URL from "../utils/config";
 import { toast } from "react-toastify";
 
-const BookingCard = ({ booking }) => {
+const AdminBookingCard = ({ booking }) => {
   const {
     tourName,
     fullName,
@@ -15,15 +15,11 @@ const BookingCard = ({ booking }) => {
     _id,
   } = booking;
 
-  const setCreatedAt = new Date(createdAt);
-  const newCreatedAt = setCreatedAt.toDateString(); // Get a string representing the date portion
-
-  const booked = new Date(date);
-  const bookedFor = booked.toDateString(); // Get a string representing the date portion
+  const bookedFor = new Date(date).toDateString();
+  const bookedOn = new Date(createdAt).toDateString();
 
   const confirmDelete = async () => {
-    const result = window.confirm("Is this booking completed?");
-    if (result) {
+    if (window.confirm("Mark this booking as completed?")) {
       deleteBooking();
     }
   };
@@ -36,8 +32,8 @@ const BookingCard = ({ booking }) => {
       const { message } = await response.json();
 
       if (response.ok) {
-        // toast.success(message)
-        location.reload();
+        toast.success("Booking marked as completed");
+        window.location.reload();
       } else {
         toast.error(message);
       }
@@ -47,26 +43,25 @@ const BookingCard = ({ booking }) => {
   };
 
   return (
-    <>
-      <tbody className="rounded overflow-hidden py-8 px-3 border-b-gray-500 border-b-[1px]   ">
-        <tr className="w-full text-center overflow-hidden">
-          <td className="">{tourName}</td>
-          <td className="">{fullName}</td>
-          <td className="">{userId}</td>
-          <td className="">{maxGroupSize}</td>
-          <td className="">{phone}</td>
-          <td className="">{bookedFor}</td>
-          <td className="">{newCreatedAt}</td>
-          <td className="">{totalPrice}</td>
-          <td>
-            <button onClick={confirmDelete} className="Redbtn my-2 mx-2 ">
-              Completed
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </>
+    <tr className="hover:bg-gray-50 transition-colors">
+      <td className="px-4 py-3 text-sm font-medium text-gray-800">{tourName}</td>
+      <td className="px-4 py-3 text-sm text-gray-600">{fullName}</td>
+      <td className="px-4 py-3 text-sm text-gray-600">{userId}</td>
+      <td className="px-4 py-3 text-sm text-gray-600">{maxGroupSize}</td>
+      <td className="px-4 py-3 text-sm text-gray-600">{phone}</td>
+      <td className="px-4 py-3 text-sm text-gray-600">{bookedFor}</td>
+      <td className="px-4 py-3 text-sm text-gray-600">{bookedOn}</td>
+      <td className="px-4 py-3 text-sm font-medium text-gray-800">${totalPrice}</td>
+      <td className="px-4 py-3">
+        <button
+          onClick={confirmDelete}
+          className="px-3 py-1.5 bg-gradient-to-r from-BaseColor to-BHoverColor text-white text-xs font-medium rounded-lg hover:shadow-md transition-all"
+        >
+          Complete
+        </button>
+      </td>
+    </tr>
   );
 };
 
-export default BookingCard;
+export default AdminBookingCard;

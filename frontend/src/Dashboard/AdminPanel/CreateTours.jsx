@@ -1,36 +1,34 @@
-import React, { useState, useContext} from 'react';
+import React, { useState, useContext } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-import BASE_URL from '../../utils/config'
-import {AuthContext} from '../../context/AuthContext'
+import BASE_URL from '../../utils/config';
+import { AuthContext } from '../../context/AuthContext';
 
 const CreateTours = () => {
   const navigate = useNavigate();
-  const {user, token} = useContext(AuthContext)
+  const { token } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
 
-    const [formData, setFormData] = useState({
-      title: '',
-      city: '',
-      desc: '',
-      address: '',
-      price: 0,
-      maxGroupSize: 1,
-      photo: '',
-      distance: 0,
-      featured: false
-    })
+  const [formData, setFormData] = useState({
+    title: '',
+    city: '',
+    desc: '',
+    address: '',
+    price: 0,
+    maxGroupSize: 1,
+    photo: '',
+    distance: 0,
+    featured: false
+  });
 
-    
-      const handleInput = (e) => {
-        setFormData({...formData, [e.target.name]:e.target.value})
-        
-      }
+  const handleInput = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    console.log(formData)
+    e.preventDefault();
+    setIsLoading(true);
     try {
       const response = await fetch(`${BASE_URL}/tour`, {
         method: 'POST',
@@ -40,168 +38,190 @@ const CreateTours = () => {
         },
         body: JSON.stringify(formData),
       });
-      const {message} = await response.json();
-  
-      if (response.ok) {
-        toast.success(message)
-        navigate('/all-tours')
-      } else{
-        toast.error(message)
-      }
-  } catch(err){
-    toast.error("Server not responding")
-  }
-}
+      const { message } = await response.json();
 
+      if (response.ok) {
+        toast.success(message);
+        navigate('/all-tours');
+      } else {
+        toast.error(message);
+      }
+    } catch (err) {
+      toast.error("Server not responding");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen md:min-h-[400px] flex items-center justify-center bg-gray-100">
-      <div className="bg-white mx-6 p-6 md:p-8 rounded-lg text-center shadow-md w-full max-w-xl m-8 md:max-w-[80%] ">
-        
-        
-        {/* Sign Up Form */}
-        <div className="flex flex-col justify-center">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Create Tour</h2>
-            <p className="text-sm md:text-base text-GrayColor">Create a new tour by filling the all fields.</p>
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">
+              Create <span className="text-BaseColor">New Tour</span>
+            </h2>
+            <p className="text-gray-500">Fill in the details to add a new tour package</p>
           </div>
 
-        <form onSubmit={handleSubmit} className="space-y-2 md:space-y-3">
-          
-      <div className='md:grid grid-cols-2 gap-8'>
-          <div>
-            <label htmlFor="" className="block  text-md md:text-lg font-medium text-GrayColor">Title</label>
-            <input
-              type="text"
-              name='title'
-              placeholder="Enter Tour Name"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-GreenColor"
-              value={formData.title}
-              onChange={handleInput}
-              required
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Title */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleInput}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
+                  placeholder="Tour name"
+                />
+              </div>
 
-          <div>
-            <label htmlFor="" className="block text-md md:text-lg font-medium text-GrayColor">City</label>
-            <input
-              type="text"
-              name='city'
-              placeholder="Enter City Name"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-GreenColor"
-              value={formData.city}
-              onChange={handleInput}
-              required
-            />
-          </div>
-        
-        </div>
-      <div className='md:grid grid-cols-3 gap-8'>
-        
-      <div>
-            <label htmlFor="" className="block text-md md:text-lg font-medium text-GrayColor">Price</label>
-            <input
-              type="number"
-              name='price'
-              placeholder="Enter Price"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-GreenColor"
-              value={formData.price}
-              onChange={handleInput}
-              required
-            />
-          </div>
+              {/* City */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  City
+                </label>
+                <input
+                  type="text"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleInput}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
+                  placeholder="Destination city"
+                />
+              </div>
 
-          <div>
-            <label htmlFor="" className="block text-md md:text-lg font-medium text-GrayColor">Max Peoples</label>
-            <input
-              type="number"
-              name='maxGroupSize'
-              placeholder="Enter Max Peoples per Trip Tour"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-GreenColor"
-              value={formData.maxGroupSize}
-              onChange={handleInput}
-              required
-            />
-          </div>
+              {/* Price */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Price ($)
+                </label>
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleInput}
+                  required
+                  min="0"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
+                />
+              </div>
 
-                    <div>
-            <label htmlFor="" className="block text-md md:text-lg font-medium text-GrayColor">Distance</label>
-            <input
-              type="number"
-              name='distance'
-              placeholder="Enter Total Distance"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-GreenColor"
-              value={formData.distance}
-              onChange={handleInput}
-              
-            />
-          </div>
-          
-        </div>
+              {/* Max Group Size */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Max People
+                </label>
+                <input
+                  type="number"
+                  name="maxGroupSize"
+                  value={formData.maxGroupSize}
+                  onChange={handleInput}
+                  required
+                  min="1"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
+                />
+              </div>
 
-          <div>
-            <label htmlFor="" className="block text-md md:text-lg font-medium text-GrayColor">Address</label>
-            <input
-              type="text"
-              name='address'
-              placeholder="Enter Destination Address"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-GreenColor"
-              value={formData.address}
-              onChange={handleInput}
-              required
-            />
-          </div>
+              {/* Distance */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Distance (km)
+                </label>
+                <input
+                  type="number"
+                  name="distance"
+                  value={formData.distance}
+                  onChange={handleInput}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
+                />
+              </div>
 
-          <div>
-            <label htmlFor="" className="block text-md md:text-lg font-medium text-GrayColor">Description</label>
-            <input
-              type="text"
-              name='desc'
-              placeholder="Enter Description"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-GreenColor"
-              value={formData.desc}
-              onChange={handleInput}
-              
-            />
-          </div>
+              {/* Address */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Address
+                </label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInput}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
+                  placeholder="Full address"
+                />
+              </div>
 
-          <div>
-            <label htmlFor="" className="block text-md md:text-lg font-medium text-GrayColor">Photo URL</label>
-            <input
-              type="text"
-              name='photo'
-              placeholder="Enter Picture URL"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-GreenColor"
-              value={formData.photo}
-              onChange={handleInput}
-              required
-            />
-          </div>
+              {/* Description */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description
+                </label>
+                <textarea
+                  name="desc"
+                  value={formData.desc}
+                  onChange={handleInput}
+                  rows="4"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
+                  placeholder="Tour description"
+                />
+              </div>
 
+              {/* Photo URL */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Photo URL
+                </label>
+                <input
+                  type="text"
+                  name="photo"
+                  value={formData.photo}
+                  onChange={handleInput}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+            </div>
 
-          
-          <div className='flex items-center justify-between mb-3'>
-            <label htmlFor="" className='text-TextColor text-[15px] font-semibold leading-7 px-4'>
-              Featured 
-              <select name="featured" value={formData.featured} onChange={handleInput} className='text-TextColor text-[15px] leading-7 px-4 py-3 focus:outline-none' >
+            {/* Featured */}
+            <div className="flex items-center space-x-4">
+              <label className="text-sm font-medium text-gray-700">Featured</label>
+              <select
+                name="featured"
+                value={formData.featured}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    featured: e.target.value === "true",
+                  })}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor"
+              >
                 <option value="false">No</option>
                 <option value="true">Yes</option>
               </select>
-            </label>
-          </div>
+            </div>
 
-          <div>
-            <button
-              type="submit"
-              className="w-full Greenbtn my-3"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Creating...' : 'Create'}
-            </button>
-          </div>
-        </form>
+            {/* Submit Button */}
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3 px-6 bg-gradient-to-r from-BaseColor to-BHoverColor text-white font-semibold rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Creating...' : 'Create Tour'}
+              </button>
+            </div>
+          </form>
         </div>
-
       </div>
     </div>
   );
