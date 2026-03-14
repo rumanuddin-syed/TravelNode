@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import BASE_URL from "../../utils/config";
 import { AuthContext } from "../../context/AuthContext";
 import useFetch from "../../hooks/useFetch";
+import { FiUpload } from "react-icons/fi";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -41,7 +42,6 @@ const Profile = () => {
       const { message } = await response.json();
 
       if (response.ok) {
-        // dispatch({type: "LOGIN_START"})
         dispatch({
           type: "UPDATE_USER",
           payload: {
@@ -61,58 +61,84 @@ const Profile = () => {
   };
 
   return (
-    <div className="py-8">
-      <form action="" onSubmit={submitHandler}>
-        <div className="my-4">
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-900">Profile Settings</h2>
+      <p className="text-gray-600">Update your personal information below.</p>
+
+      <form onSubmit={submitHandler} className="space-y-5">
+        {/* Username Field */}
+        <div>
+          <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+            Full Name
+          </label>
           <input
             type="text"
-            placeholder="Name"
+            id="username"
             name="username"
             value={formData.username}
             onChange={handleInput}
             required
-            className="w-full px-4 py-3 focus:outline-none border-b border-solid focus:border-b-Color"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition-all duration-300"
+            placeholder="Enter your name"
           />
         </div>
-        <div className="my-4">
+
+        {/* Email Field */}
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            Email Address
+          </label>
           <input
             type="email"
-            placeholder="Email"
+            id="email"
             name="email"
             value={formData.email}
             onChange={handleInput}
             required
-            className="w-full px-4 py-3 focus:outline-none border-b border-solid focus:border-b-Color"
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition-all duration-300"
+            placeholder="Enter your email"
           />
         </div>
 
-        <div className="mb-1 flex items-center gap-3">
-          {user.photo && (
-            <figure className="w-[45px] h-[45px] rounded-full border-2 border-solid border-Color  flex items-center justify-center ">
-              <img src={user.photo} alt="" className="w-full rounded-full" />
-            </figure>
-          )}
-
-          <div className="relative w-[120px] h-[40px] my-4">
-            <input
-              className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
-              type="file"
-              id="customFile"
-              accept=".png, .jpg, .jpeg"
-            />
-            {/* 
-            <label
-              htmlFor="customFile"
-              className="absolute top-0 left-0 w-full h-full flex items-center
-              px-[.75rem] py-[.375rem] text-center text-[15px] leading-6 overflow-hidden cursor-pointer text-HeadingColor font-semibold rounded-lg truncate bg-blue-100"
-            >
-              Upload Photo
-            </label> */}
+        {/* Photo Upload */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Profile Photo
+          </label>
+          <div className="flex items-center space-x-4">
+            {user.photo && (
+              <figure className="w-16 h-16 rounded-full border-2 border-BaseColor overflow-hidden">
+                <img src={user.photo} alt="Profile" className="w-full h-full object-cover" />
+              </figure>
+            )}
+            <div className="relative flex-1">
+              <input
+                type="file"
+                id="photo"
+                name="photo"
+                accept=".png,.jpg,.jpeg"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                onChange={(e) => {
+                  // Handle file upload logic if needed (currently not used)
+                }}
+              />
+              <div className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 hover:bg-gray-100 transition-all duration-300 cursor-pointer">
+                <FiUpload className="w-5 h-5 text-gray-500 mr-2" />
+                <span className="text-sm text-gray-600">Click to upload new photo</span>
+              </div>
+            </div>
           </div>
+          <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 5MB</p>
         </div>
 
-        <div>
-          <button className="Searchbtn w-full rounded-md">Update Now</button>
+        {/* Submit Button */}
+        <div className="pt-4">
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-BaseColor to-BHoverColor text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
+          >
+            Update Profile
+          </button>
         </div>
       </form>
     </div>

@@ -6,6 +6,7 @@ import Bookings from "./Bookings";
 import BASE_URL from "../../utils/config";
 import { useNavigate } from "react-router-dom";
 import Profile from "./Profile";
+import { FiUser, FiMail, FiSettings, FiCalendar } from "react-icons/fi";
 
 const MyAccount = () => {
   const { user, dispatch, token } = useContext(AuthContext);
@@ -44,68 +45,105 @@ const MyAccount = () => {
   };
 
   return (
-    <section>
-      <div className="max-w-[1170px] py-4 px-5 mx-auto">
-        <div className="grid md:grid-cols-3 gap-10">
-          <div className="py-[50px] px-[30px] rounded-md">
-            <div className="flex items-center justify-center">
-              <figure className="w-[100px] h-[100px] rounded-full border-2 border-solid border-Color">
-                <img
-                  src={avatar}
-                  alt=""
-                  className="w-full h-full rounded-full"
-                />
-              </figure>
-            </div>
+    <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white min-h-screen">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Profile Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden sticky top-24">
+              {/* Header with gradient */}
+              <div className="h-24 bg-gradient-to-r from-BaseColor to-BHoverColor"></div>
+              
+              {/* Avatar - centered overlapping */}
+              <div className="flex justify-center -mt-12">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-BaseColor to-BHoverColor rounded-full blur-md opacity-75"></div>
+                  <figure className="relative w-24 h-24 rounded-full border-4 border-white overflow-hidden shadow-lg">
+                    <img
+                      src={avatar}
+                      alt={user?.username}
+                      className="w-full h-full object-cover"
+                    />
+                  </figure>
+                </div>
+              </div>
 
-            <div className="text-center mt-4">
-              <h3 className="text-[18px] leading-[30px] text-HeadingColor font-bold">
-                {user.username}
-              </h3>
-              <p className="text-TextColor text-[15px] leading-6 font-medium">
-                {user.email}
-              </p>
-            </div>
+              {/* User Info */}
+              <div className="text-center mt-4 px-6 pb-6">
+                <h3 className="text-xl font-bold text-gray-900">{user?.username}</h3>
+                <p className="text-gray-500 text-sm flex items-center justify-center mt-1">
+                  <FiMail className="mr-1" /> {user?.email}
+                </p>
 
-            <div className="mt-[50px] md:mt-[70px]">
-              <button
-                onClick={() => setTab("settings")}
-                className="w-full mb-2 btn"
-              >
-                Update Name
-              </button>
-              <button
-                onClick={confirmDelete}
-                className="w-full bg-black noCbtn hover:bg-gray-900 "
-              >
-                Delete Account
-              </button>
+                {/* Stats Placeholder (optional) */}
+                <div className="flex justify-center gap-4 mt-4 pt-4 border-t border-gray-100">
+                  <div>
+                    <span className="block text-lg font-bold text-BaseColor">0</span>
+                    <span className="text-xs text-gray-500">Bookings</span>
+                  </div>
+                  <div>
+                    <span className="block text-lg font-bold text-BaseColor">0</span>
+                    <span className="text-xs text-gray-500">Reviews</span>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="mt-6 space-y-3">
+                  <button
+                    onClick={() => setTab("settings")}
+                    className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-BaseColor to-BHoverColor text-white px-4 py-3 rounded-xl font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
+                  >
+                    <FiSettings className="w-5 h-5" />
+                    <span>Update Profile</span>
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    className="w-full flex items-center justify-center space-x-2 bg-gray-100 text-gray-700 px-4 py-3 rounded-xl font-medium hover:bg-gray-200 hover:text-BaseColor transition-all duration-300"
+                  >
+                    <span>Delete Account</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="col-span-2 md:px-[30px] ">
-            <div className="flex">
+          {/* Main Content Area */}
+          <div className="lg:col-span-2">
+            {/* Tab Navigation */}
+            <div className="bg-white rounded-xl shadow-lg p-1 inline-flex mb-6">
               <button
                 onClick={() => setTab("bookings")}
-                className={`${
-                  tab === "bookings" && "bg-GrayColor text-white font-bold"
-                } p-2 mr-5 px-3 lg:px-5 rounded-md text-HeadingColor font-semibold text-[13px] md:text-[14px] lg:text-[16px] leading-7 border border-solid border-Color`}
+                className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300 ${
+                  tab === "bookings"
+                    ? "bg-gradient-to-r from-BaseColor to-BHoverColor text-white shadow-md"
+                    : "text-gray-600 hover:text-BaseColor hover:bg-gray-50"
+                }`}
               >
-                My Bookings
+                <span className="flex items-center space-x-2">
+                  <FiCalendar className="w-4 h-4" />
+                  <span>My Bookings</span>
+                </span>
               </button>
               <button
                 onClick={() => setTab("settings")}
-                className={`${
-                  tab === "settings" && "bg-GrayColor text-white font-bold"
-                } p-2 mr-5 px-3 lg:px-5 rounded-md text-HeadingColor font-semibold text-[13px] md:text-[14px] lg:text-[16px] leading-7 border border-solid border-Color`}
+                className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300 ${
+                  tab === "settings"
+                    ? "bg-gradient-to-r from-BaseColor to-BHoverColor text-white shadow-md"
+                    : "text-gray-600 hover:text-BaseColor hover:bg-gray-50"
+                }`}
               >
-                Profile Settings
+                <span className="flex items-center space-x-2">
+                  <FiSettings className="w-4 h-4" />
+                  <span>Profile Settings</span>
+                </span>
               </button>
             </div>
-            {tab === "bookings" && <Bookings />}
-            {tab === "settings" && (
-              <Profile user={user} dispatch={dispatch} token={token} />
-            )}
+
+            {/* Tab Content */}
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              {tab === "bookings" && <Bookings />}
+              {tab === "settings" && <Profile user={user} dispatch={dispatch} token={token} />}
+            </div>
           </div>
         </div>
       </div>
