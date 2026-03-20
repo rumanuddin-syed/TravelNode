@@ -9,6 +9,7 @@ import reviewRoutes from "./routes/reviewRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import tripPlannerRoutes from './routes/tripPlannerRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -44,6 +45,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/tour", tourRoutes);
 app.use("/api/review", reviewRoutes);
 app.use("/api/booking", bookingRoutes);
+app.use('/api/planner', tripPlannerRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Trips & Travels API!");

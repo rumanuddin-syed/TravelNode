@@ -14,6 +14,7 @@ import Bookings from '../Dashboard/AdminPanel/Bookings'
 import AdminTours from '../Dashboard/AdminPanel/AdminTours'
 import CreateTours from '../Dashboard/AdminPanel/CreateTours'
 import UpdateTours from '../Dashboard/AdminPanel/UpdateTour'
+import TripPlanner from '../pages/TripPlanner'
 
 const Router = () => {
   return (
@@ -33,6 +34,7 @@ const Router = () => {
         <Route path='/booked' element={<Booked />} />
         <Route path='/contact' element={<Contact />} />
         <Route path='/tours/search' element={<SearchResultList />} />
+        <Route path='/trip-planner' element={<TripPlanner />} />
     </Routes>
   )
 }

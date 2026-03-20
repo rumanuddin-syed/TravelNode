@@ -69,6 +69,7 @@ const Header = () => {
       { path: "/tours", label: "Tours", icon: BiMap },
       { path: "/about", label: "Gallery", icon: BiImage },
       { path: "/contact", label: "Contact", icon: BiEnvelope },
+      { path: "/trip-planner", label: "Trip Planner", icon: BiMap },
     ],
     admin: [
       { path: "/all-booking", label: "Bookings", icon: BiBookmark },
