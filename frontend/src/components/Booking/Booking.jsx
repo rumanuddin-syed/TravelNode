@@ -221,9 +221,7 @@ const Booking = ({ price, title, reviewsArray, avgRating }) => {
           )}
           <div className="flex justify-between text-lg font-bold mt-4 pt-2 border-t border-gray-200">
             <span>Total</span>
-            <span className="text-BaseColor">
-              Rs. {data.maxGroupSize * price + (data.mediatorId ? data.hours * data.costPerHour : 0)}
-            </span>
+            <span className="text-BaseColor">Rs. {data.maxGroupSize * price}</span>
           </div>
         </div>
 

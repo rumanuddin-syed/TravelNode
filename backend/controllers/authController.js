@@ -2,6 +2,11 @@ import User from "../models/User.js";
 import Mediator from "../models/Mediator.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
+import OTP from "../models/OTP.js";
+import { sendOTPEmail } from "../utils/sendEmail.js";
+
+
+const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString();
 
 const registerUser = async (req, res) => {
   try {
@@ -81,3 +86,70 @@ const loginUser = async (req, res) => {
 };
 
 export { registerUser, loginUser };
+
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ message: "Email is required" });
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      // For security, don't reveal if email exists
+      return res.status(200).json({ message: "If email exists, OTP sent" });
+    }
+
+    // Delete any existing OTP for this email
+    await OTP.deleteMany({ email: email.toLowerCase() });
+
+    const otp = generateOTP();
+    await OTP.create({
+      email: email.toLowerCase(),
+      otp,
+      expiresAt: Date.now() + 10 * 60 * 1000,
+    });
+
+    await sendOTPEmail(email, otp);
+    res.status(200).json({ message: "OTP sent to your email" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Reset Password – Verify OTP and update password
+export const resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const otpRecord = await OTP.findOne({
+      email: email.toLowerCase(),
+      otp,
+      expiresAt: { $gt: Date.now() },
+    });
+
+    if (!otpRecord) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    // Hash new password
+    const salt = await bcryptjs.genSalt(10);
+    const hashedPassword = await bcryptjs.hash(newPassword, salt);
+
+    await User.findOneAndUpdate(
+      { email: email.toLowerCase() },
+      { password: hashedPassword }
+    );
+
+    // Delete used OTP
+    await OTP.deleteOne({ _id: otpRecord._id });
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

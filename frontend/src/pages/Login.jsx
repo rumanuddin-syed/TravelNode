@@ -132,6 +132,11 @@ const Login = () => {
                   Register here
                 </Link>
               </p>
+              <div className="text-right mt-2">
+              <Link to="/forgot-password" className="text-sm text-BaseColor hover:underline">
+                Forgot Password?
+              </Link>
+            </div>
             </div>
           </form>
         </div>

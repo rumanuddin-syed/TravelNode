@@ -118,7 +118,7 @@ const UpdateTours = ({ tour, id }) => {
 
             {/* Price */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Price ($)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Price (Rs. )</label>
               <input
                 type="number"
                 name="price"
