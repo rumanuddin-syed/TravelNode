@@ -94,14 +94,22 @@ const Header = () => {
           isScrolled ? "shadow-md py-2" : "py-4"
         } ${isVisible ? "translate-y-0" : "-translate-y-full"}`}
       >
-        <nav className="container mx-auto px-4 md:px-6 lg:px-8">
+        <nav className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="flex items-center justify-between">
             {/* Logo with animation */}
             <div className="relative group">
               {role === "admin" ? (
-                <div className="h-10 md:h-12 md:hidden transform transition-transform group-hover:scale-105">
-                  <img src={Logo} alt="Logo" className="h-full w-auto" />
-                </div>
+                <div className="relative group flex items-center">
+                {/* Glow Effect */}
+                <div className="absolute -inset-2 bg-gradient-to-r from-BaseColor to-BHoverColor rounded-xl blur-lg opacity-30 group-hover:opacity-60 transition duration-300"></div>
+
+                {/* Logo */}
+                <img
+                  src={Logo}
+                  alt="Travel Node Logo"
+                  className="relative h-24 md:h-28 lg:h-32 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
               ) : (
                 <Link to={"/"} className="block">
                   <div className="h-10 md:h-12 transform transition-transform hover:scale-105">

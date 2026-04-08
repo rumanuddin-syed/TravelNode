@@ -62,12 +62,15 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="space-y-6">
             <div className="space-y-4">
-              <div className="relative group inline-block">
-                <div className="absolute -inset-1 bg-gradient-to-r from-BaseColor to-BHoverColor rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-300"></div>
+              <div className="relative group flex items-center">
+                {/* Glow Effect */}
+                <div className="absolute -inset-2 bg-gradient-to-r from-BaseColor to-BHoverColor rounded-xl blur-lg opacity-30 group-hover:opacity-60 transition duration-300"></div>
+
+                {/* Logo */}
                 <img
                   src={Logo}
-                  alt="Trips Travels Logo"
-                  className="relative h-16 w-auto object-contain"
+                  alt="Travel Node Logo"
+                  className="relative h-24 md:h-28 lg:h-32 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
               <p className="text-gray-300 text-sm leading-relaxed">
