@@ -17,6 +17,7 @@ import UpdateTours from '../Dashboard/AdminPanel/UpdateTour'
 import TripPlanner from '../pages/TripPlanner'
 import ForgotPassword from '../pages/ForgotPassword';
 import ResetPassword from '../pages/ResetPassword';
+import NotFound from '../pages/NotFound'  
 
 const Router = () => {
   return (
@@ -39,6 +40,7 @@ const Router = () => {
         <Route path='/trip-planner' element={<TripPlanner />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path='*' element={<NotFound />} />
     </Routes>
   )
 }
