@@ -63,7 +63,7 @@ const Booking = ({ price, title, reviewsArray, avgRating }) => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <span className="text-3xl font-bold text-BaseColor">${price}</span>
+          <span className="text-3xl font-bold text-BaseColor">Rs. {price}</span>
           <span className="text-gray-500"> / person</span>
         </div>
         <div className="flex items-center space-x-1">
@@ -117,7 +117,7 @@ const Booking = ({ price, title, reviewsArray, avgRating }) => {
         <div className="border-t border-gray-100 pt-4 mt-4">
           <div className="flex justify-between mb-2">
             <span className="text-gray-600">Base Price</span>
-            <span className="font-medium">${price}</span>
+            <span className="font-medium">Rs. {price}</span>
           </div>
           <div className="flex justify-between mb-2">
             <span className="text-gray-600">Total People</span>
@@ -125,7 +125,7 @@ const Booking = ({ price, title, reviewsArray, avgRating }) => {
           </div>
           <div className="flex justify-between text-lg font-bold mt-4 pt-2 border-t border-gray-200">
             <span>Total</span>
-            <span className="text-BaseColor">${data.maxGroupSize * price}</span>
+            <span className="text-BaseColor">Rs. {data.maxGroupSize * price}</span>
           </div>
         </div>
 

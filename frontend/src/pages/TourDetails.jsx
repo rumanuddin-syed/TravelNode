@@ -119,7 +119,7 @@ const TourDetails = () => {
                     {avgRating} ({reviewsArray.length} reviews)
                   </span>
                 </div>
-                <div className="text-2xl font-bold text-BaseColor">${price}</div>
+                <div className="text-2xl font-bold text-BaseColor">Rs. {price}</div>
               </div>
 
               <div>
