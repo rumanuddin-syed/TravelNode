@@ -7,6 +7,8 @@ import userRoutes from "./routes/userRoutes.js";
 import tourRoutes from "./routes/tourRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
+import mediatorRoutes from "./routes/mediatorRoutes.js";
+import mediatorProfileRoutes from "./routes/mediatorProfileRoutes.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import tripPlannerRoutes from './routes/tripPlannerRoutes.js';
@@ -45,6 +47,8 @@ app.use("/api/user", userRoutes);
 app.use("/api/tour", tourRoutes);
 app.use("/api/review", reviewRoutes);
 app.use("/api/booking", bookingRoutes);
+app.use("/api/mediator", mediatorRoutes);
+app.use("/api/mediator-profile", mediatorProfileRoutes);
 app.use('/api/planner', tripPlannerRoutes);
 
 app.get("/", (req, res) => {

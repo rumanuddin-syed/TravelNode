@@ -15,6 +15,12 @@ import AdminTours from '../Dashboard/AdminPanel/AdminTours'
 import CreateTours from '../Dashboard/AdminPanel/CreateTours'
 import UpdateTours from '../Dashboard/AdminPanel/UpdateTour'
 import TripPlanner from '../pages/TripPlanner'
+import MediatorDashboard from '../pages/MediatorDashboard'
+import MediatorProfile from '../pages/MediatorProfile'
+import MediatorsList from '../pages/MediatorsList'
+import MediatorManagement from '../Dashboard/AdminPanel/MediatorManagement'
+import MediatorCostManager from '../Dashboard/AdminPanel/MediatorCostManager'
+import AdminDashboard from '../Dashboard/AdminPanel/AdminDashboard'
 
 const Router = () => {
   return (
@@ -22,10 +28,16 @@ const Router = () => {
         <Route path='/' element={<Navigate to='/home' />} />
         <Route path='/home' element={<Home />} />
         <Route path='/my-account' element={<MyAccount />} />
+        <Route path='/admin-dashboard' element={<AdminDashboard />} />
         <Route path='/all-booking' element={<Bookings />} />
         <Route path='/all-tours' element={<AdminTours />} />
         <Route path='/update-tour/:id' element={<UpdateTours />} />
         <Route path='/create' element={<CreateTours />} />
+        <Route path='/mediator-dashboard' element={<MediatorDashboard />} />
+        <Route path='/mediator-profile' element={<MediatorProfile />} />
+        <Route path='/mediators' element={<MediatorsList />} />
+        <Route path='/mediator-management' element={<MediatorManagement />} />
+        <Route path='/mediator-cost' element={<MediatorCostManager />} />
         <Route path='/login' element={<Login />} />
         <Route path='/register' element={<Register />} />
         <Route path='/tours' element={<Tours />} />

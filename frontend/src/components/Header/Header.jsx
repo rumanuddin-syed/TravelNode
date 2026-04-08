@@ -67,11 +67,13 @@ const Header = () => {
     user: [
       { path: "/home", label: "Home", icon: BiHome },
       { path: "/tours", label: "Tours", icon: BiMap },
+      { path: "/mediators", label: "Mediators", icon: BiUser },
       { path: "/about", label: "Gallery", icon: BiImage },
       { path: "/contact", label: "Contact", icon: BiEnvelope },
       { path: "/trip-planner", label: "Trip Planner", icon: BiMap },
     ],
     admin: [
+      { path: "/admin-dashboard", label: "Dashboard", icon: BiBookmark },
       { path: "/all-booking", label: "Bookings", icon: BiBookmark },
       { path: "/all-tours", label: "Tours", icon: BiMap },
       { path: "/create", label: "Create", icon: BiPlus },
@@ -140,7 +142,11 @@ const Header = () => {
               {user ? (
                 <div className="flex items-center space-x-3">
                   <Link
-                    to={role === "user" ? "/my-account" : "#"}
+                    to={
+                      role === "user" ? "/my-account" :
+                      role === "mediator" ? "/mediator-dashboard" :
+                      "#"
+                    }
                     className="flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-300 group"
                   >
                     <div className="w-8 h-8 rounded-full bg-gradient-to-r from-BaseColor to-BHoverColor flex items-center justify-center text-white group-hover:shadow-lg transform group-hover:scale-105 transition-all duration-300">
@@ -178,7 +184,11 @@ const Header = () => {
             <div className="flex items-center space-x-3 md:hidden">
               {user && (
                 <Link
-                  to={role === "user" ? "/my-account" : "#"}
+                  to={
+                    role === "user" ? "/my-account" :
+                    role === "mediator" ? "/mediator-dashboard" :
+                    "#"
+                  }
                   className="w-8 h-8 rounded-full bg-gradient-to-r from-BaseColor to-BHoverColor flex items-center justify-center text-white shadow-md"
                 >
                   <BiUser className="w-5 h-5" />
@@ -261,15 +271,34 @@ const Header = () => {
           <div className="p-6 border-t border-gray-100">
             {user ? (
               <div className="space-y-3">
-                <div className="flex items-center space-x-3 px-4 py-3 bg-gray-50 rounded-xl">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-BaseColor to-BHoverColor flex items-center justify-center text-white">
-                    <BiUser className="w-6 h-6" />
+                <Link
+                  to={
+                    role === "user" ? "/my-account" :
+                    role === "mediator" ? "/mediator-dashboard" :
+                    "#"
+                  }
+                  onClick={handleMenuToggle}
+                  className="block"
+                >
+                  <div className="flex items-center space-x-3 px-4 py-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-BaseColor to-BHoverColor flex items-center justify-center text-white">
+                      <BiUser className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">{user.username}</p>
+                      <p className="text-xs text-gray-500">{role}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{user.username}</p>
-                    <p className="text-xs text-gray-500">{role}</p>
-                  </div>
-                </div>
+                </Link>
+                {role === "mediator" && (
+                  <Link
+                    to="/mediator-profile"
+                    onClick={handleMenuToggle}
+                    className="w-full block px-4 py-3 rounded-xl text-gray-700 bg-blue-50 hover:bg-blue-100 text-sm font-medium transition-all duration-300"
+                  >
+                    Edit Profile
+                  </Link>
+                )}
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-xl text-gray-600 hover:text-BaseColor hover:bg-BaseColor/10 transition-all duration-300"

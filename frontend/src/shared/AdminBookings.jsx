@@ -51,7 +51,7 @@ const AdminBookingCard = ({ booking }) => {
       <td className="px-4 py-3 text-sm text-gray-600">{phone}</td>
       <td className="px-4 py-3 text-sm text-gray-600">{bookedFor}</td>
       <td className="px-4 py-3 text-sm text-gray-600">{bookedOn}</td>
-      <td className="px-4 py-3 text-sm font-medium text-gray-800">${totalPrice}</td>
+      <td className="px-4 py-3 text-sm font-medium text-gray-800">Rs. {totalPrice}</td>
       <td className="px-4 py-3">
         <button
           onClick={confirmDelete}

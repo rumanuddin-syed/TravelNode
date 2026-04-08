@@ -1,10 +1,11 @@
 import User from "../models/User.js";
+import Mediator from "../models/Mediator.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 const registerUser = async (req, res) => {
   try {
-    const { username, email, password, photo } = req.body;
+    const { username, email, password, photo, role } = req.body;
     // Check if the email is already registered
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -21,8 +22,17 @@ const registerUser = async (req, res) => {
       email,
       password: hashedPassword,
       photo,
+      role: role || "user",
     });
     await newUser.save();
+
+    // If user registers as mediator, create a mediator profile
+    if (role === "mediator") {
+      const mediatorProfile = new Mediator({
+        userId: newUser._id.toString(),
+      });
+      await mediatorProfile.save();
+    }
 
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {

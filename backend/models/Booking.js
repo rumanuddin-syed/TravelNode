@@ -32,6 +32,21 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    mediatorId: {
+      type: String,
+    },
+    costPerHour: {
+      type: Number,
+      default: 0,
+    },
+    hours: {
+      type: Number,
+      default: 0,
+    },
+    completed: {
+      type: Boolean,
+      default: false,
+    },
     updatedAt: {
       type: Date,
       default: Date.now,

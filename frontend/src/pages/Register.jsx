@@ -125,6 +125,25 @@ const Register = () => {
             </div>
 
             <div>
+              <label
+                htmlFor=""
+                className="block text-md md:text-lg font-medium text-GrayColor"
+              >
+                Role
+              </label>
+              <select
+                name="role"
+                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-BaseColor"
+                value={formData.role}
+                onChange={handleInput}
+                required
+              >
+                <option value="user">Traveller</option>
+                <option value="mediator">Language Mediator</option>
+              </select>
+            </div>
+
+            <div>
               <button
                 type="submit"
                 className="w-full btn my-3"

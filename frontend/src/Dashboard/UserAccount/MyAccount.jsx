@@ -7,11 +7,15 @@ import BASE_URL from "../../utils/config";
 import { useNavigate } from "react-router-dom";
 import Profile from "./Profile";
 import { FiUser, FiMail, FiSettings, FiCalendar } from "react-icons/fi";
+import BookingCard from "../../shared/BookingCard";
+import useFetch from "../../hooks/useFetch";
+
 
 const MyAccount = () => {
   const { user, dispatch, token } = useContext(AuthContext);
   const [tab, setTab] = useState("bookings");
   const navigate = useNavigate();
+  const { apiData: bookings, loading, error } = useFetch(`${BASE_URL}/booking/${user._id}`);
 
   const confirmDelete = async () => {
     const result = window.confirm(
@@ -49,11 +53,12 @@ const MyAccount = () => {
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Profile Sidebar */}
+          {console.log(user)}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden sticky top-24">
               {/* Header with gradient */}
               <div className="h-24 bg-gradient-to-r from-BaseColor to-BHoverColor"></div>
-              
+              {}
               {/* Avatar - centered overlapping */}
               <div className="flex justify-center -mt-12">
                 <div className="relative">
@@ -78,7 +83,7 @@ const MyAccount = () => {
                 {/* Stats Placeholder (optional) */}
                 <div className="flex justify-center gap-4 mt-4 pt-4 border-t border-gray-100">
                   <div>
-                    <span className="block text-lg font-bold text-BaseColor">0</span>
+                    <span className="block text-lg font-bold text-BaseColor">{bookings?bookings.length:0}</span>
                     <span className="text-xs text-gray-500">Bookings</span>
                   </div>
                   <div>

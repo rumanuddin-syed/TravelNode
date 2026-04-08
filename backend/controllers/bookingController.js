@@ -1,6 +1,7 @@
 // bookingController.js
 
 import Booking from "../models/Booking.js";
+import { updateMediatorEarnings } from "./mediatorProfileController.js";
 
 const createBooking = async (req, res) => {
   try {
@@ -12,6 +13,9 @@ const createBooking = async (req, res) => {
       totalPrice,
       tourName,
       maxGroupSize,
+      mediatorId,
+      costPerHour,
+      hours,
     } = req.body;
 
     // Validate required fields
@@ -38,8 +42,16 @@ const createBooking = async (req, res) => {
       totalPrice,
       tourName,
       maxGroupSize,
+      mediatorId: mediatorId || null,
+      costPerHour: costPerHour || 0,
+      hours: hours || 0,
     });
     await newBooking.save();
+
+    // Update mediator earnings if mediator is assigned
+    if (mediatorId && costPerHour && hours) {
+      await updateMediatorEarnings(mediatorId, costPerHour, hours);
+    }
 
     res.status(201).json({
       success: true,
