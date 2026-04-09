@@ -5,6 +5,7 @@ import { FaPeopleGroup, FaLocationDot } from "react-icons/fa6";
 import { FaStar, FaMapPin, FaCity, FaDollarSign } from "react-icons/fa";
 import CalculateAvg from "../utils/CalculateAvg";
 import Booking from "../components/Booking/Booking";
+import TourTripPlanner from "../components/TourTripPlanner/TourTripPlanner";
 import { toast } from "react-toastify";
 import useFetch from "../hooks/useFetch";
 import BASE_URL from "../utils/config";
@@ -207,6 +208,9 @@ const TourDetails = () => {
                 ))}
               </div>
             </div>
+
+            {/* AI Trip Planner - Contextual to this tour */}
+            <TourTripPlanner tour={tour} />
           </div>
 
           {/* Booking Sidebar */}

@@ -70,7 +70,7 @@ const Header = () => {
       { path: "/mediators", label: "Mediators", icon: BiUser },
       { path: "/about", label: "Gallery", icon: BiImage },
       { path: "/contact", label: "Contact", icon: BiEnvelope },
-      { path: "/trip-planner", label: "Trip Planner", icon: BiMap },
+      { path: "/my-trips", label: "My Trips", icon: BiCalendar },
     ],
     admin: [
       { path: "/admin-dashboard", label: "Dashboard", icon: BiBookmark },

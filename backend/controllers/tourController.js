@@ -124,8 +124,10 @@ const getTourBySearch = async (req, res) => {
           .json({ message: "Search term must be a string" });
       }
       searchCriteria.$or = [
-        { title: { $regex: new RegExp(`${searchTerm}`, "i") } }, // Match substring in title
-        { city: { $regex: new RegExp(`${searchTerm}`, "i") } }, // Match substring in city
+        { title: { $regex: new RegExp(`${searchTerm}`, "i") } },
+        { city: { $regex: new RegExp(`${searchTerm}`, "i") } },
+        { desc: { $regex: new RegExp(`${searchTerm}`, "i") } },
+        { address: { $regex: new RegExp(`${searchTerm}`, "i") } },
       ];
     }
 

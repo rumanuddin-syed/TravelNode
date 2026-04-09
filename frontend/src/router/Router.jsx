@@ -14,7 +14,7 @@ import Bookings from '../Dashboard/AdminPanel/Bookings'
 import AdminTours from '../Dashboard/AdminPanel/AdminTours'
 import CreateTours from '../Dashboard/AdminPanel/CreateTours'
 import UpdateTours from '../Dashboard/AdminPanel/UpdateTour'
-import TripPlanner from '../pages/TripPlanner'
+import MyTrips from '../pages/MyTrips'
 import MediatorDashboard from '../pages/MediatorDashboard'
 import MediatorProfile from '../pages/MediatorProfile'
 import MediatorsList from '../pages/MediatorsList'
@@ -49,7 +49,7 @@ const Router = () => {
         <Route path='/booked' element={<Booked />} />
         <Route path='/contact' element={<Contact />} />
         <Route path='/tours/search' element={<SearchResultList />} />
-        <Route path='/trip-planner' element={<TripPlanner />} />
+        <Route path='/my-trips' element={<MyTrips />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path='*' element={<NotFound />} />
