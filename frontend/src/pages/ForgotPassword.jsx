@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaEnvelope, FaArrowLeft } from "react-icons/fa";
-import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import BASE_URL from "../utils/config";
+import { toast } from "react-toastify";
+import { FiMail, FiArrowRight } from "react-icons/fi";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -18,60 +18,59 @@ const ForgotPassword = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      const data = await response.json();
+      const res = await response.json();
       if (response.ok) {
-        toast.success("OTP sent to your email");
+        toast.success(res.message);
         navigate("/reset-password", { state: { email } });
       } else {
-        toast.error(data.message || "Something went wrong");
+        toast.error(res.message);
       }
     } catch (err) {
-      toast.error("Server error");
+      toast.error("Server not responding");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-800">Forgot Password?</h2>
-          <p className="text-gray-500 mt-2">Enter your email to receive an OTP</p>
-        </div>
+    <section className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md">
+        <div className="card-elevated p-8 md:p-10">
+          <div className="text-center mb-8">
+            <div className="w-14 h-14 mx-auto bg-forest-50 rounded-2xl flex items-center justify-center mb-4">
+              <FiMail className="w-7 h-7 text-accent" />
+            </div>
+            <h2 className="text-display-sm mb-1">Forgot Password?</h2>
+            <p className="text-body-sm text-text-secondary">
+              Enter your email and we'll send you a reset code.
+            </p>
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-            <div className="relative">
-              <FaEnvelope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label htmlFor="email" className="form-label">Email Address</label>
               <input
                 type="email"
+                id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
+                className="form-input"
                 placeholder="you@example.com"
               />
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-BaseColor to-BHoverColor text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50"
-          >
-            {loading ? "Sending OTP..." : "Send OTP"}
-          </button>
-
-          <div className="text-center mt-4">
-            <Link to="/login" className="text-sm text-BaseColor hover:underline inline-flex items-center gap-1">
-              <FaArrowLeft /> Back to Login
-            </Link>
-          </div>
-        </form>
+            <button type="submit" disabled={loading} className="w-full btn-cta group">
+              {loading ? (
+                <><span className="spinner-cta" /> Sending...</>
+              ) : (
+                <>Send Reset Code <FiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></>
+              )}
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

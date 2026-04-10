@@ -1,30 +1,29 @@
 import React, { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { FaLock, FaKey, FaArrowLeft } from "react-icons/fa";
-import { toast } from "react-toastify";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import BASE_URL from "../utils/config";
+import { toast } from "react-toastify";
+import { FiLock, FiKey, FiArrowRight, FiEye, FiEyeOff } from "react-icons/fi";
 
 const ResetPassword = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const email = location.state?.email || "";
-
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email || "";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error("Passwords don't match");
       return;
     }
     if (newPassword.length < 6) {
       toast.error("Password must be at least 6 characters");
       return;
     }
-
     setLoading(true);
     try {
       const response = await fetch(`${BASE_URL}/auth/reset-password`, {
@@ -32,98 +31,90 @@ const ResetPassword = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp, newPassword }),
       });
-      const data = await response.json();
+      const res = await response.json();
       if (response.ok) {
-        toast.success("Password reset successful! Please login.");
+        toast.success(res.message);
         navigate("/login");
       } else {
-        toast.error(data.message || "Invalid OTP or expired");
+        toast.error(res.message);
       }
     } catch (err) {
-      toast.error("Server error");
+      toast.error("Server not responding");
     } finally {
       setLoading(false);
     }
   };
 
-  if (!email) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-red-500">No email provided. Please go back and request OTP again.</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-800">Reset Password</h2>
-          <p className="text-gray-500 mt-2">Enter OTP and new password</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">OTP Code</label>
-            <div className="relative">
-              <FaKey className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                required
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
-                placeholder="6-digit OTP"
-              />
+    <section className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md">
+        <div className="card-elevated p-8 md:p-10">
+          <div className="text-center mb-8">
+            <div className="w-14 h-14 mx-auto bg-forest-50 rounded-2xl flex items-center justify-center mb-4">
+              <FiKey className="w-7 h-7 text-accent" />
             </div>
+            <h2 className="text-display-sm mb-1">Reset Password</h2>
+            <p className="text-body-sm text-text-secondary">
+              Enter the OTP sent to <span className="font-medium text-text-primary">{email}</span>
+            </p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-            <div className="relative">
-              <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
-                placeholder="Min 6 characters"
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label htmlFor="otp" className="form-label">OTP Code</label>
+              <input type="text" id="otp" value={otp} onChange={(e) => setOtp(e.target.value)}
+                required className="form-input text-center tracking-[0.3em] text-lg font-mono" placeholder="● ● ● ● ● ●" maxLength="6"
               />
             </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-            <div className="relative">
-              <FaLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
-                placeholder="Confirm new password"
-              />
+            <div>
+              <label htmlFor="newPassword" className="form-label">New Password</label>
+              <div className="relative">
+                <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                <input
+                  type={showPassword ? "text" : "password"} id="newPassword" value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)} required className="form-input !pl-11 !pr-11"
+                  placeholder="Min 6 characters"
+                />
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors">
+                  {showPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-BaseColor to-BHoverColor text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50"
-          >
-            {loading ? "Resetting..." : "Reset Password"}
-          </button>
+            <div>
+              <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+              <div className="relative">
+                <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                <input
+                  type={showPassword ? "text" : "password"} id="confirmPassword" value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)} required className="form-input !pl-11"
+                  placeholder="Re-enter password"
+                />
+              </div>
+              {confirmPassword && newPassword !== confirmPassword && (
+                <p className="text-caption text-danger mt-1.5">Passwords don't match</p>
+              )}
+            </div>
 
-          <div className="text-center mt-4">
-            <Link to="/login" className="text-sm text-BaseColor hover:underline inline-flex items-center gap-1">
-              <FaArrowLeft /> Back to Login
+            <button type="submit" disabled={loading} className="w-full btn-cta group">
+              {loading ? (
+                <><span className="spinner-cta" /> Resetting...</>
+              ) : (
+                <>Reset Password <FiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></>
+              )}
+            </button>
+          </form>
+
+          <p className="text-center text-body-sm text-text-secondary mt-6">
+            <Link to="/login" className="font-medium text-accent hover:text-primary transition-colors">
+              ← Back to Sign In
             </Link>
-          </div>
-        </form>
+          </p>
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

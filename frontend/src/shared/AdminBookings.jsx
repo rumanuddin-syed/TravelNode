@@ -1,19 +1,10 @@
 import React from "react";
 import BASE_URL from "../utils/config";
 import { toast } from "react-toastify";
+import { FiCheck } from "react-icons/fi";
 
 const AdminBookingCard = ({ booking }) => {
-  const {
-    tourName,
-    fullName,
-    userId,
-    phone,
-    totalPrice,
-    maxGroupSize,
-    date,
-    createdAt,
-    _id,
-  } = booking;
+  const { tourName, fullName, userId, phone, totalPrice, maxGroupSize, date, createdAt, _id } = booking;
 
   const bookedFor = new Date(date).toDateString();
   const bookedOn = new Date(createdAt).toDateString();
@@ -43,20 +34,21 @@ const AdminBookingCard = ({ booking }) => {
   };
 
   return (
-    <tr className="hover:bg-gray-50 transition-colors">
-      <td className="px-4 py-3 text-sm font-medium text-gray-800">{tourName}</td>
-      <td className="px-4 py-3 text-sm text-gray-600">{fullName}</td>
-      <td className="px-4 py-3 text-sm text-gray-600">{userId}</td>
-      <td className="px-4 py-3 text-sm text-gray-600">{maxGroupSize}</td>
-      <td className="px-4 py-3 text-sm text-gray-600">{phone}</td>
-      <td className="px-4 py-3 text-sm text-gray-600">{bookedFor}</td>
-      <td className="px-4 py-3 text-sm text-gray-600">{bookedOn}</td>
-      <td className="px-4 py-3 text-sm font-medium text-gray-800">Rs. {totalPrice}</td>
-      <td className="px-4 py-3">
+    <tr className="table-row">
+      <td className="font-medium">{tourName}</td>
+      <td>{fullName}</td>
+      <td className="text-text-muted text-caption font-mono">{userId}</td>
+      <td>{maxGroupSize}</td>
+      <td>{phone}</td>
+      <td>{bookedFor}</td>
+      <td className="text-caption">{bookedOn}</td>
+      <td className="font-semibold text-primary">₹{totalPrice}</td>
+      <td>
         <button
           onClick={confirmDelete}
-          className="px-3 py-1.5 bg-gradient-to-r from-BaseColor to-BHoverColor text-white text-xs font-medium rounded-lg hover:shadow-md transition-all"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-accent text-white text-caption font-medium rounded-lg hover:bg-forest-700 transition-all"
         >
+          <FiCheck className="w-3.5 h-3.5" />
           Complete
         </button>
       </td>

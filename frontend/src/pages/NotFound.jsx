@@ -1,49 +1,56 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FaHome, FaExclamationTriangle } from "react-icons/fa";
-import { BsStars } from "react-icons/bs";
+import { FiHome, FiAlertTriangle, FiMap, FiPhone, FiImage } from "react-icons/fi";
 
 const NotFound = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white flex items-center justify-center px-4 py-20">
-      <div className="max-w-lg w-full text-center">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-20 relative overflow-hidden">
+      {/* Decorative Elements */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl mix-blend-multiply" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cta/5 rounded-full blur-3xl mix-blend-multiply" />
+
+      <div className="max-w-xl w-full text-center relative z-10">
         {/* Animated decorative elements */}
-        <div className="relative mb-8">
+        <div className="relative mb-10">
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-32 h-32 bg-BaseColor/10 rounded-full blur-2xl animate-pulse"></div>
+            <div className="w-40 h-40 bg-accent/10 rounded-full blur-2xl animate-pulse"></div>
           </div>
           <div className="relative">
-            <FaExclamationTriangle className="w-24 h-24 text-BaseColor mx-auto mb-4 animate-bounce" />
-            <h1 className="text-9xl font-black text-gray-800 relative">
-              4<span className="text-BaseColor">0</span>4
+            <FiAlertTriangle className="w-20 h-20 text-accent mx-auto mb-6 animate-bounce" />
+            <h1 className="text-[120px] leading-none font-black text-primary relative drop-shadow-sm">
+              4<span className="text-cta">0</span>4
             </h1>
           </div>
         </div>
 
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+        <h2 className="text-display-md text-text-primary mb-4">
           Oops! Page Not Found
         </h2>
-        <p className="text-gray-600 mb-8">
-          The page you are looking for might have been moved, deleted, or never existed.
+        <p className="text-body-lg text-text-secondary mb-10 max-w-sm mx-auto">
+          The page you are looking for might have been moved, deleted, or never existed in our compass.
         </p>
 
         <Link
           to="/home"
-          className="inline-flex items-center gap-3 bg-gradient-to-r from-BaseColor to-BHoverColor text-white font-semibold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 group"
+          className="btn-cta-lg inline-flex"
         >
-          <FaHome className="w-5 h-5 group-hover:scale-110 transition-transform" />
-          <span>Go to Homepage</span>
-          <BsStars className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+          <FiHome className="w-5 h-5 mr-2" />
+          Back to Homepage
         </Link>
 
         {/* Helpful suggestions */}
-        <div className="mt-12 pt-8 border-t border-gray-200">
-          <p className="text-sm text-gray-500 mb-3">You might want to check:</p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <Link to="/tours" className="text-sm text-BaseColor hover:underline">Tours</Link>
-            <Link to="/about" className="text-sm text-BaseColor hover:underline">Gallery</Link>
-            <Link to="/contact" className="text-sm text-BaseColor hover:underline">Contact</Link>
-            <Link to="/trip-planner" className="text-sm text-BaseColor hover:underline">Plan a Trip</Link>
+        <div className="mt-16 pt-10 border-t border-border-light border-dashed">
+          <p className="text-body-sm font-bold text-text-muted mb-6 uppercase tracking-wider">You might want to check:</p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link to="/tours" className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-border-light hover:border-accent hover:text-primary transition-colors text-body-sm font-bold text-text-secondary shadow-sm">
+              <FiMap className="text-accent" /> Tours
+            </Link>
+            <Link to="/about" className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-border-light hover:border-accent hover:text-primary transition-colors text-body-sm font-bold text-text-secondary shadow-sm">
+              <FiImage className="text-accent" /> Gallery
+            </Link>
+            <Link to="/contact" className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-border-light hover:border-accent hover:text-primary transition-colors text-body-sm font-bold text-text-secondary shadow-sm">
+              <FiPhone className="text-accent" /> Contact
+            </Link>
           </div>
         </div>
       </div>

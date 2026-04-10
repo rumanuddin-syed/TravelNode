@@ -1,14 +1,17 @@
 import React, { useState, useContext, useEffect } from "react";
-import { FaStar } from "react-icons/fa6";
+import { FaStar, FaUserTie } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { AuthContext } from "../../context/AuthContext";
 import BASE_URL from "../../utils/config";
 import { useNavigate } from "react-router-dom";
+import { FiUsers, FiPhone, FiUser, FiCalendar, FiClock } from "react-icons/fi";
 
-const Booking = ({ price, title, reviewsArray, avgRating }) => {
+const Booking = ({ tour, avgRating }) => {
+  const { price, title, maxGroupSize, reviews: reviewsArray } = tour;
   const currentDate = new Date().toISOString().split("T")[0];
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  
   const [mediators, setMediators] = useState([]);
   const [loadingMediators, setLoadingMediators] = useState(false);
   const [data, setData] = useState({
@@ -22,7 +25,7 @@ const Booking = ({ price, title, reviewsArray, avgRating }) => {
     date: "",
     mediatorId: "",
     costPerHour: 0,
-    hours: 4,
+    hours: undefined,
   });
 
   useEffect(() => {
@@ -69,6 +72,7 @@ const Booking = ({ price, title, reviewsArray, avgRating }) => {
       ...prev,
       mediatorId: mediatorId,
       costPerHour: selectedMediator ? selectedMediator.costPerHour : 0,
+      hours: mediatorId ? 4 : undefined, // default 4 hours if a mediator is selected
     }));
   };
 
@@ -80,8 +84,7 @@ const Booking = ({ price, title, reviewsArray, avgRating }) => {
       return;
     }
 
-    // Calculate final total including mediator cost
-    const mediatorCost = data.mediatorId ? data.hours * data.costPerHour : 0;
+    const mediatorCost = data.mediatorId ? (data.hours || 0) * data.costPerHour : 0;
     const finalTotal = data.maxGroupSize * price + mediatorCost;
 
     const bookingData = {
@@ -107,129 +110,160 @@ const Booking = ({ price, title, reviewsArray, avgRating }) => {
     }
   };
 
+  const baseTotal = data.maxGroupSize * price;
+  const mediatorTotal = data.mediatorId ? (data.hours || 0) * data.costPerHour : 0;
+  const grandTotal = baseTotal + mediatorTotal;
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
+    <div className="card p-6 md:p-8 bg-white border-none shadow-elevated">
+      <div className="flex justify-between items-center mb-6 pb-6 border-b border-border-light">
         <div>
-          <span className="text-3xl font-bold text-BaseColor">Rs. {price}</span>
-          <span className="text-gray-500"> / person</span>
+          <span className="text-display-sm text-primary">₹{price}</span>
+          <span className="text-body-sm text-text-muted"> / person</span>
         </div>
-        <div className="flex items-center space-x-1">
-          <FaStar className="text-yellow-400" />
-          <span className="font-medium">{avgRating}</span>
-          <span className="text-gray-500">({reviewsArray.length})</span>
+        <div className="flex items-center gap-1.5 bg-forest-50 px-3 py-1.5 rounded-xl">
+          <FaStar className="w-4 h-4 text-warning" />
+          <span className="font-bold text-primary">{avgRating}</span>
+          <span className="text-caption text-text-secondary">({reviewsArray?.length})</span>
         </div>
       </div>
 
-      <h3 className="text-xl font-semibold mb-4">Booking Information</h3>
+      <h3 className="text-body-lg font-bold text-text-primary mb-5">Booking Information</h3>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          id="fullName"
-          placeholder="Full Name"
-          value={data.fullName}
-          onChange={handleChange}
-          required
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
-        />
-        <input
-          type="tel"
-          id="phone"
-          placeholder="Phone Number"
-          value={data.phone}
-          onChange={handleChange}
-          required
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
-        />
-        <input
-          type="number"
-          id="maxGroupSize"
-          placeholder="Number of People"
-          value={data.maxGroupSize}
-          onChange={handleChange}
-          min="1"
-          required
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
-        />
-        <input
-          type="date"
-          id="date"
-          value={data.date}
-          onChange={handleChange}
-          min={currentDate}
-          required
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
-        />
+        <div>
+          <div className="relative">
+            <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+            <input
+              type="text"
+              id="fullName"
+              placeholder="Full Name"
+              value={data.fullName}
+              onChange={handleChange}
+              required
+              className="form-input !pl-11"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="relative">
+            <FiPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+            <input
+              type="tel"
+              id="phone"
+              placeholder="Phone Number"
+              value={data.phone}
+              onChange={handleChange}
+              required
+              className="form-input !pl-11"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="relative">
+            <FiCalendar className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+            <input
+              type="date"
+              id="date"
+              value={data.date}
+              onChange={handleChange}
+              min={currentDate}
+              required
+              className="form-input !pl-11 !pr-3 text-sm"
+            />
+          </div>
+          <div className="relative">
+            <FiUsers className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+            <input
+              type="number"
+              id="maxGroupSize"
+              placeholder="Guests"
+              value={data.maxGroupSize}
+              onChange={handleChange}
+              min="1"
+              max={maxGroupSize}
+              required
+              className="form-input !pl-11"
+            />
+          </div>
+        </div>
 
         {/* Mediator Selection */}
-        <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-xl border border-purple-200">
-          <label htmlFor="mediatorId" className="block text-sm font-semibold text-gray-700 mb-2">
-            🗣️ Add a Language Mediator (Optional)
+        <div className="mt-6 mb-2 bg-sky-50 rounded-2xl p-5 border border-sky-100">
+          <label htmlFor="mediatorId" className="flex items-center gap-2 text-body-sm font-bold text-sky-900 mb-3">
+            <FaUserTie className="text-cta" /> Add a Language Mediator
           </label>
-          <select
-            id="mediatorId"
-            value={data.mediatorId}
-            onChange={handleMediatorChange}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition"
-          >
-            <option value="">Select a mediator...</option>
-            {mediators.map((mediator) => (
-              <option key={mediator._id} value={mediator._id}>
-                {mediator.userId} - ${mediator.costPerHour}/hr
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              id="mediatorId"
+              value={data.mediatorId}
+              onChange={handleMediatorChange}
+              className="form-select w-full !bg-white !border-sky-200 focus:!border-cta !py-2.5"
+            >
+              <option value="">Select a mediator (Optional)</option>
+              {mediators.map((mediator) => (
+                <option key={mediator._id} value={mediator._id}>
+                  {mediator.userId} (₹{mediator.costPerHour}/hr)
+                </option>
+              ))}
+            </select>
+          </div>
+
           {data.mediatorId && (
-            <div className="mt-3 space-y-2">
-              <p className="text-sm text-purple-700">
-                Mediator rate: <span className="font-bold">Rs. {data.costPerHour}/hour</span>
-              </p>
-              <input
-                type="number"
-                id="hours"
-                placeholder="Hours of service"
-                value={data.hours}
-                onChange={handleChange}
-                min="1"
-                max="12"
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition text-sm"
-              />
-              <p className="text-sm text-purple-700">
-                Mediator cost: <span className="font-bold">Rs. {data.hours * data.costPerHour}</span>
-              </p>
+            <div className="mt-4 p-4 bg-white rounded-xl border border-sky-100 shadow-sm animate-fade-in">
+              <div className="flex items-center justify-between mb-3 text-body-sm">
+                <span className="text-text-secondary">Mediator Rate</span>
+                <span className="font-bold text-primary">₹{data.costPerHour}/hr</span>
+              </div>
+              <div className="relative mb-3">
+                <FiClock className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                <input
+                  type="number"
+                  id="hours"
+                  placeholder="Duration (hours)"
+                  value={data.hours}
+                  onChange={handleChange}
+                  min="1"
+                  max="12"
+                  className="form-input !pl-11 !py-2"
+                />
+              </div>
+              <div className="flex items-center justify-between text-body-sm pt-2 border-t border-border-light">
+                <span className="text-text-secondary">Mediator Total</span>
+                <span className="font-bold text-primary text-body-md">₹{mediatorTotal}</span>
+              </div>
             </div>
           )}
         </div>
 
-        <div className="border-t border-gray-100 pt-4 mt-4">
-          <div className="flex justify-between mb-2">
-            <span className="text-gray-600">Base Price</span>
-            <span className="font-medium">Rs. {price}</span>
-          </div>
-          <div className="flex justify-between mb-2">
-            <span className="text-gray-600">Total People</span>
-            <span className="font-medium">{data.maxGroupSize}</span>
-          </div>
-          {data.mediatorId && (
-            <>
-              <div className="flex justify-between mb-2 text-purple-700">
-                <span>Mediator ({data.hours}h @ Rs. {data.costPerHour}/hr)</span>
-                <span className="font-medium">Rs. {data.hours * data.costPerHour}</span>
+        {/* Summary */}
+        <div className="bg-forest-50 rounded-2xl p-5 mt-6 border border-border-light">
+          <div className="space-y-3 mb-4 text-body-sm border-b border-border-default pb-4">
+            <div className="flex justify-between">
+              <span className="text-text-secondary">₹{price} × {data.maxGroupSize} travelers</span>
+              <span className="font-bold text-primary">₹{baseTotal}</span>
+            </div>
+            {data.mediatorId && (
+              <div className="flex justify-between text-cta-hover">
+                <span>Mediator ({data.hours || 0}h)</span>
+                <span className="font-bold">₹{mediatorTotal}</span>
               </div>
-            </>
-          )}
-          <div className="flex justify-between text-lg font-bold mt-4 pt-2 border-t border-gray-200">
-            <span>Total</span>
-            <span className="text-BaseColor">Rs. {data.maxGroupSize * price}</span>
+            )}
+            <div className="flex justify-between">
+              <span className="text-text-secondary">Service fee</span>
+              <span className="font-bold text-success">Free</span>
+            </div>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-body-md font-bold text-primary">Total Price</span>
+            <span className="text-display-sm font-bold text-cta">₹{grandTotal}</span>
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="w-full py-3 bg-gradient-to-r from-BaseColor to-BHoverColor text-white font-semibold rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
-        >
-          Book Now
+        <button type="submit" className="w-full btn-cta-lg mt-6">
+          Confirm Booking
         </button>
       </form>
     </div>

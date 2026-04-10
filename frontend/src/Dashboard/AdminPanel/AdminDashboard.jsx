@@ -1,52 +1,65 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BiBookmark, BiUser, BiMap, BiMoney } from "react-icons/bi";
+import { FiMap, FiUsers, FiDollarSign, FiPlusCircle, FiList, FiStar } from "react-icons/fi";
 
 const AdminDashboard = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const adminMenuItems = [
     {
       title: "All Bookings",
       description: "View and manage customer bookings",
-      icon: BiBookmark,
+      icon: FiList,
       path: "/all-booking",
-      color: "from-blue-400 to-blue-600",
+      gradient: "from-blue-500 to-cyan-400",
     },
     {
       title: "All Tours",
       description: "Manage tour listings and details",
-      icon: BiMap,
+      icon: FiMap,
       path: "/all-tours",
-      color: "from-green-400 to-green-600",
+      gradient: "from-primary to-accent",
     },
     {
       title: "Create Tour",
       description: "Add new tour to the platform",
-      icon: BiMap,
+      icon: FiPlusCircle,
       path: "/create",
-      color: "from-purple-400 to-purple-600",
+      gradient: "from-sky-500 to-cta",
     },
     {
       title: "Mediator Management",
       description: "Assign language mediators to bookings",
-      icon: BiUser,
+      icon: FiUsers,
       path: "/mediator-management",
-      color: "from-yellow-400 to-yellow-600",
+      gradient: "from-amber-400 to-orange-500",
     },
     {
       title: "Mediator Costs",
       description: "Set hourly rates and duration for mediators",
-      icon: BiMoney,
+      icon: FiDollarSign,
       path: "/mediator-cost",
-      color: "from-red-400 to-red-600",
+      gradient: "from-rose-400 to-red-500",
+    },
+    {
+      title: "Reviews Management",
+      description: "Manage and highlight traveler reviews",
+      icon: FiStar,
+      path: "/admin-reviews",
+      gradient: "from-purple-500 to-pink-500",
     },
   ];
 
   return (
-    <div className="py-8 px-4 md:px-6 lg:px-8 w-full bg-gray-50 min-h-screen">
+    <div className="bg-background min-h-screen py-16 px-4 md:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Manage tours, bookings, and mediators</p>
+        <div className="mb-10 text-center md:text-left">
+          <span className="section-overline">Admin Space</span>
+          <h1 className="text-display-md text-text-primary mt-2 mb-2">Admin Dashboard</h1>
+          <p className="text-body-sm text-text-secondary">Manage tours, bookings, and mediators from one place.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -56,16 +69,25 @@ const AdminDashboard = () => {
               <Link
                 key={index}
                 to={item.path}
-                className="group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+                className="card group cursor-pointer border-none shadow-sm hover:shadow-elevated hover:-translate-y-1 transition-all duration-300"
               >
-                <div className={`bg-gradient-to-r ${item.color} h-24 flex items-center justify-center group-hover:scale-105 transition-transform duration-300`}>
-                  <Icon className="w-12 h-12 text-white" />
+                <div className="p-6 pb-5 flex items-start justify-between">
+                  <div>
+                    <h3 className="text-body-lg font-bold text-text-primary mb-1 group-hover:text-primary transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-body-sm text-text-secondary leading-relaxed line-clamp-2 max-w-[200px]">
+                      {item.description}
+                    </p>
+                  </div>
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center text-white shadow-md transform group-hover:rotate-6 transition-transform duration-300`}>
+                    <Icon className="w-6 h-6" />
+                  </div>
                 </div>
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {item.title}
-                  </h3>
-                  <p className="text-sm text-gray-600">{item.description}</p>
+                <div className="bg-forest-50/50 px-6 py-3 border-t border-border-light group-hover:bg-forest-50 transition-colors">
+                  <span className="text-caption font-bold text-accent group-hover:text-primary flex items-center gap-1.5 transition-colors">
+                    Manage <span className="transform translate-x-0 group-hover:translate-x-1 transition-transform">→</span>
+                  </span>
                 </div>
               </Link>
             );

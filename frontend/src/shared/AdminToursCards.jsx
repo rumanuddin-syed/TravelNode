@@ -3,8 +3,7 @@ import BASE_URL from "../utils/config";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { FaEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+import { FiEdit2, FiTrash2 } from "react-icons/fi";
 
 const AdminToursCards = ({ tour }) => {
   const { token } = useContext(AuthContext);
@@ -31,7 +30,6 @@ const AdminToursCards = ({ tour }) => {
         toast.error(message);
       } else {
         toast.success(message);
-        // Optionally refresh the list – here we reload for simplicity
         window.location.reload();
       }
     } catch (err) {
@@ -40,44 +38,44 @@ const AdminToursCards = ({ tour }) => {
   };
 
   return (
-    <tr className="hover:bg-gray-50 transition-colors">
-      <td className="px-4 py-3">
+    <tr className="table-row">
+      <td>
         <img
           src={photo}
           alt={title}
-          className="w-16 h-16 object-cover rounded-lg shadow-sm"
+          className="w-14 h-14 object-cover rounded-xl border border-border-light"
         />
       </td>
-      <td className="px-4 py-3 text-sm font-medium text-gray-800">{title}</td>
-      <td className="px-4 py-3 text-sm text-gray-600">{city}</td>
-      <td className="px-4 py-3">
+      <td className="font-medium">{title}</td>
+      <td>{city}</td>
+      <td>
         <span
-          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            featured === "true"
-              ? "bg-green-100 text-green-800"
+          className={`badge ${
+            featured
+              ? "bg-forest-100 text-forest-700"
               : "bg-gray-100 text-gray-600"
           }`}
         >
           {featured ? "Yes" : "No"}
         </span>
       </td>
-      <td className="px-4 py-3 text-sm text-gray-600">{maxGroupSize}</td>
-      <td className="px-4 py-3 text-sm text-gray-600">{reviews?.length || 0}</td>
-      <td className="px-4 py-3">
-        <div className="flex items-center gap-2">
+      <td>{maxGroupSize}</td>
+      <td>{reviews?.length || 0}</td>
+      <td>
+        <div className="flex items-center gap-1.5">
           <Link
             to={`/update-tour/${_id}`}
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+            className="btn-icon !p-2"
             title="Edit"
           >
-            <FaEdit size={18} />
+            <FiEdit2 className="w-4 h-4" />
           </Link>
           <button
             onClick={handleDelete}
-            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            className="p-2 rounded-xl text-danger bg-red-50 hover:bg-red-100 transition-colors"
             title="Delete"
           >
-            <MdDelete size={18} />
+            <FiTrash2 className="w-4 h-4" />
           </button>
         </div>
       </td>

@@ -3,7 +3,7 @@ import useFetch from "../../hooks/useFetch";
 import BASE_URL from "../../utils/config";
 import { AuthContext } from "../../context/AuthContext";
 import BookingCard from "../../shared/BookingCard";
-import { FiCalendar, FiUsers, FiDollarSign } from "react-icons/fi";
+import { FiCalendar } from "react-icons/fi";
 
 const Bookings = () => {
   const { user } = useContext(AuthContext);
@@ -12,9 +12,7 @@ const Bookings = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="relative">
-          <div className="w-12 h-12 border-4 border-gray-200 border-t-BaseColor rounded-full animate-spin"></div>
-        </div>
+        <div className="spinner"></div>
       </div>
     );
   }
@@ -22,41 +20,43 @@ const Bookings = () => {
   if (error) {
     return (
       <div className="text-center py-12">
-        <p className="text-red-500">Failed to load bookings</p>
+        <p className="text-danger font-medium">Failed to load bookings</p>
       </div>
     );
   }
 
   if (!bookings || bookings.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-          <FiCalendar className="w-8 h-8 text-gray-400" />
+      <div className="text-center py-16 bg-forest-50/50 rounded-2xl border border-dashed border-border-default">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-white shadow-sm rounded-full mb-6">
+          <FiCalendar className="w-8 h-8 text-accent" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900">No Bookings Yet</h3>
-        <p className="text-gray-500 mt-1">Start exploring tours and book your first adventure!</p>
+        <h3 className="text-display-sm text-text-primary mb-2">No Bookings Yet</h3>
+        <p className="text-body-lg text-text-secondary">Start exploring tours and book your first adventure!</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900">My Bookings</h2>
-      <p className="text-gray-600">Manage your upcoming and past tour bookings.</p>
+    <div className="animate-fade-in">
+      <div className="mb-8">
+        <h2 className="text-display-sm text-text-primary mb-2">My Bookings</h2>
+        <p className="text-body-sm text-text-secondary">Manage your upcoming and past tour bookings.</p>
+      </div>
 
       {/* Desktop Table View (hidden on mobile) */}
-      <div className="hidden md:block overflow-x-auto">
+      <div className="hidden md:block overflow-hidden rounded-2xl border border-border-light bg-white">
         <table className="w-full">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tour</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Guests</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+          <thead className="bg-forest-50 border-b border-border-light">
+            <tr>
+              <th className="px-6 py-4 text-left text-caption font-bold text-text-muted uppercase tracking-wider">Tour</th>
+              <th className="px-6 py-4 text-left text-caption font-bold text-text-muted uppercase tracking-wider">Date</th>
+              <th className="px-6 py-4 text-left text-caption font-bold text-text-muted uppercase tracking-wider">Guests</th>
+              <th className="px-6 py-4 text-left text-caption font-bold text-text-muted uppercase tracking-wider">Price</th>
+              <th className="px-6 py-4 text-right text-caption font-bold text-text-muted uppercase tracking-wider">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-border-light">
             {bookings.map((booking) => (
               <BookingCard key={booking._id} booking={booking} />
             ))}

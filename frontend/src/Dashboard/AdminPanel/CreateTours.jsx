@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import BASE_URL from '../../utils/config';
 import { AuthContext } from '../../context/AuthContext';
+import { FiMap, FiMapPin, FiDollarSign, FiUsers, FiImage, FiNavigation } from 'react-icons/fi';
 
 const CreateTours = () => {
   const navigate = useNavigate();
@@ -54,147 +54,151 @@ const CreateTours = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">
-              Create <span className="text-BaseColor">New Tour</span>
+    <div className="bg-background min-h-screen py-16 px-4 md:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="card md:p-10 p-6 shadow-elevated">
+          <div className="text-center mb-10">
+            <span className="section-overline">Admin Space</span>
+            <h2 className="text-display-md text-text-primary mt-2 flex items-center justify-center gap-3">
+              Create New Tour
             </h2>
-            <p className="text-gray-500">Fill in the details to add a new tour package</p>
+            <p className="text-body-sm text-text-secondary mt-2">Fill in the details to add a new tour package to the platform.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Title */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInput}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
-                  placeholder="Tour name"
-                />
+                <label className="form-label">Title <span className="text-danger">*</span></label>
+                <div className="relative">
+                  <FiMap className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                  <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInput}
+                    required
+                    className="form-input !pl-11"
+                    placeholder="E.g., Grand Canyon Adventure"
+                  />
+                </div>
               </div>
 
               {/* City */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  City
-                </label>
-                <input
-                  type="text"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleInput}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
-                  placeholder="Destination city"
-                />
+                <label className="form-label">City <span className="text-danger">*</span></label>
+                <div className="relative">
+                  <FiMapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleInput}
+                    required
+                    className="form-input !pl-11"
+                    placeholder="E.g., Las Vegas"
+                  />
+                </div>
               </div>
 
               {/* Price */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Price (Rs. )
-                </label>
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleInput}
-                  required
-                  min="0"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
-                />
+                <label className="form-label">Price Per Person (₹) <span className="text-danger">*</span></label>
+                <div className="relative">
+                  <FiDollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleInput}
+                    required
+                    min="0"
+                    className="form-input !pl-11"
+                  />
+                </div>
               </div>
 
               {/* Max Group Size */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Max People
-                </label>
-                <input
-                  type="number"
-                  name="maxGroupSize"
-                  value={formData.maxGroupSize}
-                  onChange={handleInput}
-                  required
-                  min="1"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
-                />
+                <label className="form-label">Max People <span className="text-danger">*</span></label>
+                <div className="relative">
+                  <FiUsers className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                  <input
+                    type="number"
+                    name="maxGroupSize"
+                    value={formData.maxGroupSize}
+                    onChange={handleInput}
+                    required
+                    min="1"
+                    className="form-input !pl-11"
+                  />
+                </div>
               </div>
 
               {/* Distance */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Distance (km)
-                </label>
-                <input
-                  type="number"
-                  name="distance"
-                  value={formData.distance}
-                  onChange={handleInput}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
-                />
+                <label className="form-label">Distance (km)</label>
+                <div className="relative">
+                  <FiNavigation className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                  <input
+                    type="number"
+                    name="distance"
+                    value={formData.distance}
+                    onChange={handleInput}
+                    className="form-input !pl-11"
+                  />
+                </div>
               </div>
 
               {/* Address */}
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Address
-                </label>
+                <label className="form-label">Full Address <span className="text-danger">*</span></label>
                 <input
                   type="text"
                   name="address"
                   value={formData.address}
                   onChange={handleInput}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
-                  placeholder="Full address"
+                  className="form-input"
+                  placeholder="Street, Area, City, Zip"
                 />
               </div>
 
               {/* Description */}
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Description
-                </label>
+                <label className="form-label">Description <span className="text-danger">*</span></label>
                 <textarea
                   name="desc"
                   value={formData.desc}
                   onChange={handleInput}
                   rows="4"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
-                  placeholder="Tour description"
+                  className="form-textarea"
+                  placeholder="Describe the tour experience, highlights, and itinerary..."
+                  required
                 />
               </div>
 
               {/* Photo URL */}
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Photo URL
-                </label>
-                <input
-                  type="text"
-                  name="photo"
-                  value={formData.photo}
-                  onChange={handleInput}
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
-                  placeholder="https://example.com/image.jpg"
-                />
+                <label className="form-label">Photo URL <span className="text-danger">*</span></label>
+                <div className="relative">
+                  <FiImage className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                  <input
+                    type="text"
+                    name="photo"
+                    value={formData.photo}
+                    onChange={handleInput}
+                    required
+                    className="form-input !pl-11 text-sm font-mono text-text-secondary"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
               </div>
             </div>
 
             {/* Featured */}
-            <div className="flex items-center space-x-4">
-              <label className="text-sm font-medium text-gray-700">Featured</label>
+            <div className="flex items-center gap-4 bg-forest-50 p-4 rounded-xl border border-border-light shadow-sm w-fit mt-2">
+              <label className="text-body-sm font-bold text-text-primary">Feature on Homepage?</label>
               <select
                 name="featured"
                 value={formData.featured}
@@ -203,7 +207,7 @@ const CreateTours = () => {
                     ...formData,
                     featured: e.target.value === "true",
                   })}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor"
+                className="form-select bg-white !py-1.5 !text-sm"
               >
                 <option value="false">No</option>
                 <option value="true">Yes</option>
@@ -211,13 +215,13 @@ const CreateTours = () => {
             </div>
 
             {/* Submit Button */}
-            <div className="pt-4">
+            <div className="pt-6 border-t border-border-light border-dashed">
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-6 bg-gradient-to-r from-BaseColor to-BHoverColor text-white font-semibold rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-cta-lg w-full md:w-auto min-w-[250px] shadow-elevated"
               >
-                {isLoading ? 'Creating...' : 'Create Tour'}
+                {isLoading ? <div className="spinner-cta mx-auto" /> : 'Create Tour'}
               </button>
             </div>
           </form>

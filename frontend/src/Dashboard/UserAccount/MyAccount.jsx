@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import avatar from "../../assets/images/avatar.jpg";
@@ -6,10 +6,9 @@ import Bookings from "./Bookings";
 import BASE_URL from "../../utils/config";
 import { useNavigate } from "react-router-dom";
 import Profile from "./Profile";
-import { FiUser, FiMail, FiSettings, FiCalendar } from "react-icons/fi";
+import { FiUser, FiMail, FiSettings, FiCalendar, FiLogOut } from "react-icons/fi";
 import BookingCard from "../../shared/BookingCard";
 import useFetch from "../../hooks/useFetch";
-
 
 const MyAccount = () => {
   const { user, dispatch, token } = useContext(AuthContext);
@@ -17,9 +16,13 @@ const MyAccount = () => {
   const navigate = useNavigate();
   const { apiData: bookings, loading, error } = useFetch(`${BASE_URL}/booking/${user._id}`);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const confirmDelete = async () => {
     const result = window.confirm(
-      "Are you sure you want to delete your account?"
+      "Are you sure you want to delete your account? This action cannot be undone."
     );
     if (result) {
       deleteAccount();
@@ -48,22 +51,26 @@ const MyAccount = () => {
     }
   };
 
+  const handleLogout = () => {
+    dispatch({ type: 'LOGOUT' });
+    navigate('/');
+  };
+
   return (
-    <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white min-h-screen">
-      <div className="max-w-7xl mx-auto">
+    <section className="bg-background min-h-screen pt-28 pb-20">
+      <div className="max-w-7xl mx-auto px-5 lg:px-8">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Profile Sidebar */}
-          {console.log(user)}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden sticky top-24">
+            <div className="card overflow-hidden sticky top-32">
               {/* Header with gradient */}
-              <div className="h-24 bg-gradient-to-r from-BaseColor to-BHoverColor"></div>
-              {}
+              <div className="h-32 bg-gradient-forest"></div>
+              
               {/* Avatar - centered overlapping */}
-              <div className="flex justify-center -mt-12">
+              <div className="flex justify-center -mt-16">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-BaseColor to-BHoverColor rounded-full blur-md opacity-75"></div>
-                  <figure className="relative w-24 h-24 rounded-full border-4 border-white overflow-hidden shadow-lg">
+                  <div className="absolute inset-0 bg-primary/20 rounded-full blur-md transform translate-y-2"></div>
+                  <figure className="relative w-32 h-32 rounded-full border-4 border-white overflow-hidden bg-forest-50 shadow-sm">
                     <img
                       src={avatar}
                       alt={user?.username}
@@ -74,36 +81,43 @@ const MyAccount = () => {
               </div>
 
               {/* User Info */}
-              <div className="text-center mt-4 px-6 pb-6">
-                <h3 className="text-xl font-bold text-gray-900">{user?.username}</h3>
-                <p className="text-gray-500 text-sm flex items-center justify-center mt-1">
-                  <FiMail className="mr-1" /> {user?.email}
+              <div className="text-center mt-4 px-6 pb-8">
+                <h3 className="text-display-sm text-text-primary">{user?.username}</h3>
+                <p className="text-body-sm text-text-secondary flex items-center justify-center mt-1.5 gap-1.5">
+                  <FiMail className="text-accent" /> {user?.email}
                 </p>
 
-                {/* Stats Placeholder (optional) */}
-                <div className="flex justify-center gap-4 mt-4 pt-4 border-t border-gray-100">
+                {/* Stats Placeholder */}
+                <div className="flex justify-center gap-8 mt-6 pt-6 border-t border-border-light">
                   <div>
-                    <span className="block text-lg font-bold text-BaseColor">{bookings?bookings.length:0}</span>
-                    <span className="text-xs text-gray-500">Bookings</span>
+                    <span className="block text-display-sm font-bold text-primary">{bookings ? bookings.length : 0}</span>
+                    <span className="text-caption font-bold text-text-muted uppercase tracking-wider">Bookings</span>
                   </div>
                   <div>
-                    <span className="block text-lg font-bold text-BaseColor">0</span>
-                    <span className="text-xs text-gray-500">Reviews</span>
+                    <span className="block text-display-sm font-bold text-primary">0</span>
+                    <span className="text-caption font-bold text-text-muted uppercase tracking-wider">Reviews</span>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="mt-6 space-y-3">
+                <div className="mt-8 space-y-3">
                   <button
                     onClick={() => setTab("settings")}
-                    className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-BaseColor to-BHoverColor text-white px-4 py-3 rounded-xl font-medium hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
+                    className="w-full btn-cta"
                   >
-                    <FiSettings className="w-5 h-5" />
+                    <FiSettings className="w-4 h-4" />
                     <span>Update Profile</span>
                   </button>
                   <button
+                    onClick={handleLogout}
+                    className="w-full btn-outline"
+                  >
+                    <FiLogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </button>
+                  <button
                     onClick={confirmDelete}
-                    className="w-full flex items-center justify-center space-x-2 bg-gray-100 text-gray-700 px-4 py-3 rounded-xl font-medium hover:bg-gray-200 hover:text-BaseColor transition-all duration-300"
+                    className="w-full btn-ghost !text-danger hover:!bg-red-50 pt-4"
                   >
                     <span>Delete Account</span>
                   </button>
@@ -115,13 +129,13 @@ const MyAccount = () => {
           {/* Main Content Area */}
           <div className="lg:col-span-2">
             {/* Tab Navigation */}
-            <div className="bg-white rounded-xl shadow-lg p-1 inline-flex mb-6">
+            <div className="bg-white rounded-2xl shadow-sm border border-border-light p-1.5 inline-flex mb-6 max-w-full overflow-x-auto hide-scrollbar">
               <button
                 onClick={() => setTab("bookings")}
-                className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300 ${
+                className={`px-6 py-3 rounded-xl text-body-sm font-bold transition-all duration-300 whitespace-nowrap ${
                   tab === "bookings"
-                    ? "bg-gradient-to-r from-BaseColor to-BHoverColor text-white shadow-md"
-                    : "text-gray-600 hover:text-BaseColor hover:bg-gray-50"
+                    ? "bg-primary text-white shadow-md"
+                    : "text-text-secondary hover:text-primary hover:bg-forest-50"
                 }`}
               >
                 <span className="flex items-center space-x-2">
@@ -131,10 +145,10 @@ const MyAccount = () => {
               </button>
               <button
                 onClick={() => setTab("settings")}
-                className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300 ${
+                className={`px-6 py-3 rounded-xl text-body-sm font-bold transition-all duration-300 whitespace-nowrap ${
                   tab === "settings"
-                    ? "bg-gradient-to-r from-BaseColor to-BHoverColor text-white shadow-md"
-                    : "text-gray-600 hover:text-BaseColor hover:bg-gray-50"
+                    ? "bg-primary text-white shadow-md"
+                    : "text-text-secondary hover:text-primary hover:bg-forest-50"
                 }`}
               >
                 <span className="flex items-center space-x-2">
@@ -145,7 +159,7 @@ const MyAccount = () => {
             </div>
 
             {/* Tab Content */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="card p-6 md:p-8">
               {tab === "bookings" && <Bookings />}
               {tab === "settings" && <Profile user={user} dispatch={dispatch} token={token} />}
             </div>

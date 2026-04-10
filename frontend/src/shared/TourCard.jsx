@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaStar, FaMapMarkerAlt, FaClock, FaUsers } from "react-icons/fa";
+import { FaStar, FaMapMarkerAlt } from "react-icons/fa";
+import { FiUsers, FiArrowRight } from "react-icons/fi";
 import { BsHeart, BsHeartFill } from "react-icons/bs";
 import CalculateAvg from "../utils/CalculateAvg";
 
@@ -11,100 +12,110 @@ const TourCard = ({ tour }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
-    <div className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden">
-      {/* Featured Badge */}
-      {featured && (
-        <div className="absolute top-4 left-4 z-10">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-BaseColor to-BHoverColor rounded-full blur-sm opacity-75 animate-pulse"></div>
-            <span className="relative px-4 py-1.5 bg-gradient-to-r from-BaseColor to-BHoverColor text-white text-xs font-bold rounded-full">
-              Featured
-            </span>
-          </div>
-        </div>
-      )}
-
-      {/* Wishlist Button */}
-      <button
-        onClick={() => setIsLiked(!isLiked)}
-        className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group/like"
-      >
-        {isLiked ? (
-          <BsHeartFill className="w-5 h-5 text-BaseColor animate-pulse" />
-        ) : (
-          <BsHeart className="w-5 h-5 text-gray-600 group-hover/like:text-BaseColor transition-colors" />
-        )}
-      </button>
-
+    <div className="group card-hover overflow-hidden flex flex-col">
       {/* Image Container */}
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-52 overflow-hidden">
         {!imageLoaded && (
-          <div className="absolute inset-0 bg-gray-200 animate-pulse"></div>
+          <div className="absolute inset-0 bg-forest-100 animate-pulse" />
         )}
         <img
           src={photo}
           alt={title}
-          className={`w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ${
-            imageLoaded ? 'opacity-100' : 'opacity-0'
+          className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${
+            imageLoaded ? "opacity-100" : "opacity-0"
           }`}
           onLoad={() => setImageLoaded(true)}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+        {/* Top Row Badges */}
+        <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+          {/* Featured Badge */}
+          {featured ? (
+            <span className="badge bg-cta text-white shadow-sm">
+              <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse-soft" />
+              Featured
+            </span>
+          ) : (
+            <span />
+          )}
+
+          {/* Like Button */}
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              setIsLiked(!isLiked);
+            }}
+            className="w-9 h-9 bg-white/90 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-200"
+          >
+            {isLiked ? (
+              <BsHeartFill className="w-4 h-4 text-danger" />
+            ) : (
+              <BsHeart className="w-4 h-4 text-forest-600" />
+            )}
+          </button>
+        </div>
+
+        {/* Bottom gradient */}
+        <div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-black/30 to-transparent" />
       </div>
 
       {/* Content */}
-      <div className="p-6">
-        {/* Location and Rating */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-1 text-gray-500 text-sm">
-            <FaMapMarkerAlt className="w-3 h-3 text-BaseColor" />
-            <span>{city}</span>
+      <div className="flex flex-col flex-1 p-5">
+        {/* Location & Rating Row */}
+        <div className="flex items-center justify-between mb-2.5">
+          <div className="flex items-center gap-1.5 text-text-secondary">
+            <FaMapMarkerAlt className="w-3 h-3 text-accent" />
+            <span className="text-caption font-medium">{city}</span>
           </div>
-          <div className="flex items-center space-x-1 bg-yellow-50 px-2 py-1 rounded-full">
-            <FaStar className="w-3 h-3 text-yellow-400" />
-            <span className="text-sm font-semibold text-gray-700">{avgRating}</span>
-            <span className="text-xs text-gray-400">({reviews.length})</span>
+          <div className="flex items-center gap-1 bg-forest-50 px-2 py-0.5 rounded-lg">
+            <FaStar className="w-3 h-3 text-warning" />
+            <span className="text-caption font-bold text-text-primary">
+              {avgRating}
+            </span>
+            <span className="text-caption text-text-muted">
+              ({reviews?.length || 0})
+            </span>
           </div>
         </div>
 
         {/* Title */}
         <Link to={`/tours/${_id}`}>
-          <h3 className="text-lg font-bold text-gray-800 mb-2 hover:text-BaseColor transition-colors line-clamp-1">
+          <h3 className="text-body-md font-bold text-text-primary mb-1.5 line-clamp-1 hover:text-accent transition-colors">
             {title}
           </h3>
         </Link>
 
         {/* Description */}
-        <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+        <p className="text-body-sm text-text-secondary mb-4 line-clamp-2 flex-1">
           {desc}
         </p>
 
-        {/* Tour Details */}
-        <div className="flex items-center space-x-4 mb-4">
-          <div className="flex items-center space-x-1 text-sm text-gray-500">
-            <FaClock className="w-3 h-3 text-BaseColor" />
-            <span>{distance} km</span>
-          </div>
-          <div className="flex items-center space-x-1 text-sm text-gray-500">
-            <FaUsers className="w-3 h-3 text-BaseColor" />
-            <span>Up to {maxGroupSize}</span>
-          </div>
+        {/* Meta Row */}
+        <div className="flex items-center gap-4 mb-4 text-caption text-text-muted">
+          <span className="flex items-center gap-1">
+            <FiUsers className="w-3.5 h-3.5 text-accent" />
+            Up to {maxGroupSize}
+          </span>
+          <span>{distance} km</span>
         </div>
 
-        {/* Price and Book Button */}
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+        {/* Price & CTA */}
+        <div className="flex items-center justify-between pt-4 border-t border-border-light">
           <div>
-            <span className="text-xs text-gray-500">Starting from</span>
-            <p className="text-2xl font-bold bg-gradient-to-r from-BaseColor to-BHoverColor bg-clip-text text-transparent">
-              Rs. {price}
+            <span className="text-caption text-text-muted">From</span>
+            <p className="text-xl font-bold text-primary">
+              ₹{price}
+              <span className="text-caption font-normal text-text-muted">
+                /person
+              </span>
             </p>
           </div>
           <Link
             to={`/tours/${_id}`}
-            className="group/btn relative overflow-hidden bg-gradient-to-r from-BaseColor to-BHoverColor text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:shadow-lg transition-all duration-300"
+            className="btn-cta !px-5 !py-2.5 text-body-sm group/btn"
           >
-            <span className="relative z-10">Book Now</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-BHoverColor to-BaseColor opacity-0 group-hover/btn:opacity-100 transition-opacity"></div>
+            Book Now
+            <FiArrowRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
           </Link>
         </div>
       </div>

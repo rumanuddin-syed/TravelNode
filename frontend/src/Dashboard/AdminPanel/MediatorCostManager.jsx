@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import BASE_URL from '../../utils/config';
+import { toast } from 'react-toastify';
+import { FiDollarSign, FiClock, FiEdit2, FiSave, FiX, FiCheckCircle } from 'react-icons/fi';
 
 const MediatorCostManager = () => {
   const { user } = useContext(AuthContext);
@@ -11,6 +13,7 @@ const MediatorCostManager = () => {
   const [hours, setHours] = useState('');
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     fetchBookings();
   }, []);
 
@@ -29,6 +32,7 @@ const MediatorCostManager = () => {
       }
     } catch (error) {
       console.error(error);
+      toast.error("Failed to load bookings");
     } finally {
       setLoading(false);
     }
@@ -49,13 +53,17 @@ const MediatorCostManager = () => {
       });
       const result = await res.json();
       if (result.success) {
+        toast.success("Cost updated successfully");
         fetchBookings();
         setEditingBooking(null);
         setCostPerHour('');
         setHours('');
+      } else {
+        toast.error(result.message);
       }
     } catch (error) {
       console.error(error);
+      toast.error("Error updating cost");
     }
   };
 
@@ -66,81 +74,125 @@ const MediatorCostManager = () => {
   };
 
   const calculateTotalCost = (booking) => {
-    return booking.costPerHour * booking.hours;
+    return (booking.costPerHour || 0) * (booking.hours || 0);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-screen bg-background">
+      <div className="spinner"></div>
+    </div>
+  );
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Mediator Cost Management</h1>
-      <div className="grid gap-4">
-        {bookings.filter((b) => b.mediatorId).map((booking) => (
-          <div key={booking._id} className="booking-card p-4 border rounded-lg">
-            {editingBooking === booking._id ? (
-              <div className="space-y-4">
-                <h3 className="text-lg font-bold">{booking.tourName}</h3>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Cost per Hour (Rs.)</label>
-                  <input
-                    type="number"
-                    value={costPerHour}
-                    onChange={(e) => setCostPerHour(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg"
-                    step="0.01"
-                  />
+    <div className="bg-background min-h-screen py-16 px-4 md:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
+        <div className="mb-10 text-center md:text-left">
+          <span className="section-overline">Admin Space</span>
+          <h1 className="text-display-md text-text-primary mt-2 flex items-center justify-center md:justify-start gap-3">
+            <FiDollarSign className="text-cta" /> Mediator Cost Management
+          </h1>
+          <p className="text-body-sm text-text-secondary mt-2">Manage hourly rates and set durations for active mediator bookings.</p>
+        </div>
+
+        <div className="grid gap-6">
+          {bookings.filter((b) => b.mediatorId).length > 0 ? bookings.filter((b) => b.mediatorId).map((booking) => (
+            <div key={booking._id} className="card overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+              {editingBooking === booking._id ? (
+                <div className="p-6 md:p-8 space-y-6 animate-fade-in bg-forest-50/30">
+                  <h3 className="text-body-lg font-bold text-text-primary flex items-center gap-2">
+                    Editing: {booking.tourName}
+                  </h3>
+                  
+                  <div className="grid md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="form-label text-text-secondary">Cost per Hour (₹)</label>
+                      <div className="relative">
+                        <FiDollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                        <input
+                          type="number"
+                          value={costPerHour}
+                          onChange={(e) => setCostPerHour(e.target.value)}
+                          className="form-input !pl-11"
+                          step="50"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="form-label text-text-secondary">Total Hours</label>
+                      <div className="relative">
+                        <FiClock className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                        <input
+                          type="number"
+                          value={hours}
+                          onChange={(e) => setHours(e.target.value)}
+                          className="form-input !pl-11"
+                          step="0.5"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 pt-4 border-t border-border-light">
+                    <button
+                      onClick={() => updateBookingCost(booking._id)}
+                      className="btn-cta group flex-1 md:flex-none justify-center"
+                    >
+                      <FiSave className="w-4 h-4 group-hover:scale-110 transition-transform" /> Save Changes
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingBooking(null);
+                        setCostPerHour('');
+                        setHours('');
+                      }}
+                      className="btn-ghost flex-1 md:flex-none justify-center"
+                    >
+                      <FiX className="w-4 h-4" /> Cancel
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Hours</label>
-                  <input
-                    type="number"
-                    value={hours}
-                    onChange={(e) => setHours(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-lg"
-                    step="0.5"
-                  />
+              ) : (
+                <div className="p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                  <div className="space-y-4 flex-1">
+                    <div>
+                      <h3 className="text-body-lg font-bold text-text-primary mb-1">{booking.tourName}</h3>
+                      <p className="text-caption text-text-muted">Customer: <span className="font-semibold text-text-secondary">{booking.fullName}</span></p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-4">
+                      <div className="bg-sky-50 px-4 py-2 rounded-xl border border-sky-100 flex-1 min-w-[120px]">
+                        <p className="text-caption font-bold text-sky-800/60 uppercase tracking-widest mb-1">Cost / Hr</p>
+                        <p className="font-bold text-sky-900">₹{booking.costPerHour || 0}</p>
+                      </div>
+                      <div className="bg-forest-50 px-4 py-2 rounded-xl border border-forest-100 flex-1 min-w-[120px]">
+                        <p className="text-caption font-bold text-forest-800/60 uppercase tracking-widest mb-1">Hours</p>
+                        <p className="font-bold text-forest-900">{booking.hours || 0}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col items-start md:items-end gap-4 w-full md:w-auto">
+                    <div className="bg-white px-5 py-3 rounded-2xl border border-border-light shadow-sm w-full md:w-auto text-left md:text-right">
+                      <p className="text-caption font-bold text-text-muted uppercase tracking-wider mb-1">Total Mediator Cost</p>
+                      <p className="text-3xl font-bold text-primary">₹{calculateTotalCost(booking)}</p>
+                    </div>
+                    
+                    <button
+                      onClick={() => handleEdit(booking)}
+                      className="btn-outline w-full md:w-auto self-end"
+                    >
+                      <FiEdit2 className="w-4 h-4" /> Edit Costs
+                    </button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => updateBookingCost(booking._id)}
-                    className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={() => {
-                      setEditingBooking(null);
-                      setCostPerHour('');
-                      setHours('');
-                    }}
-                    className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-lg font-bold">{booking.tourName}</h3>
-                  <p>Customer: {booking.fullName}</p>
-                  <p>Date: {booking.date}</p>
-                  <p>Cost per Hour: Rs. {booking.costPerHour || 0}</p>
-                  <p>Hours: {booking.hours || 0}</p>
-                  <p className="font-bold">
-                    Total Mediator Cost: Rs. {calculateTotalCost(booking) || 0}
-                  </p>
-                </div>
-                <button
-                  onClick={() => handleEdit(booking)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                >
-                  Edit
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          )) : (
+            <div className="card p-12 text-center text-text-secondary">
+              No bookings with assigned mediators found.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

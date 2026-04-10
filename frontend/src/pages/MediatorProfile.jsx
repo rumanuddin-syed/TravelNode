@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import BASE_URL from '../utils/config';
-import { BiSave, BiX } from 'react-icons/bi';
+import { BiSave } from 'react-icons/bi';
 import { toast } from 'react-toastify';
+import { FiDollarSign, FiMessageCircle, FiPhone, FiInfo, FiEdit2, FiX } from 'react-icons/fi';
 
 const MediatorProfile = () => {
   const { user } = useContext(AuthContext);
@@ -20,6 +21,7 @@ const MediatorProfile = () => {
   });
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     if (user && user._id) {
       fetchMediatorProfile();
     }
@@ -47,7 +49,6 @@ const MediatorProfile = () => {
           isAvailable: result.data.isAvailable !== undefined ? result.data.isAvailable : true,
         });
       } else {
-        // Profile doesn't exist, initialize with defaults
         setProfile({
           userId: user._id,
           bio: '',
@@ -120,69 +121,72 @@ const MediatorProfile = () => {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-xl text-gray-600">Loading...</div>
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="spinner" />
       </div>
     );
 
   return (
-    <div className="py-8 px-4 md:px-6 lg:px-8 w-full bg-gray-50 min-h-screen">
+    <section className="bg-background min-h-screen py-16 px-4 md:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        {/* Header with Edit Button */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Mediator Profile</h1>
-            <p className="text-gray-600">{user?.username}</p>
+            <span className="section-overline">Settings</span>
+            <h2 className="text-display-sm text-text-primary mt-1">Mediator Profile</h2>
+            <p className="text-body-sm text-text-secondary mt-1">{user?.username}</p>
           </div>
           {!isEditing && (
             <button
               onClick={() => setIsEditing(true)}
-              className="px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-bold text-lg transition shadow-md"
+              className="btn-outline group"
             >
-              ✏️ Edit Profile
+              <FiEdit2 className="w-4 h-4 group-hover:scale-110 transition-transform" /> Edit Profile
             </button>
           )}
         </div>
 
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-
-          {/* Content */}
-          <div className="p-8">
+        <div className="card overflow-hidden">
+          <div className="p-6 md:p-10">
             {isEditing ? (
-              // Edit Mode
-              <div className="space-y-6">
-                {/* Cost Per Hour - Highlighted */}
-                <div className="bg-blue-50 p-6 rounded-lg border-2 border-blue-200">
-                  <label className="block text-lg font-bold text-blue-900 mb-2">💰 Cost Per Hour (Rs.)</label>
+              <div className="space-y-8 animate-fade-in">
+                {/* Cost Per Hour */}
+                <div className="bg-sky-50 p-6 md:p-8 rounded-2xl border border-sky-100">
+                  <label className="flex items-center gap-2 text-body-lg font-bold text-sky-900 mb-3">
+                    <FiDollarSign className="text-cta" /> Cost Per Hour (₹)
+                  </label>
                   <input
                     type="number"
                     name="costPerHour"
                     value={formData.costPerHour}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-lg font-semibold"
+                    className="form-input !py-4 !text-lg !font-bold"
                     placeholder="Enter hourly rate"
-                    step="0.01"
+                    step="50"
                     min="0"
                   />
-                  <p className="text-sm text-blue-700 mt-2">This is what you will earn per hour for mediating tours</p>
+                  <p className="text-caption text-sky-700 mt-2 ml-1">
+                    This is your base earning rate per hour.
+                  </p>
                 </div>
 
-                {/* Languages - Highlighted */}
-                <div className="bg-purple-50 p-6 rounded-lg border-2 border-purple-200">
-                  <label className="block text-lg font-bold text-purple-900 mb-3">🗣️ Languages Known</label>
-                  <div className="flex flex-wrap gap-2 mb-4">
+                {/* Languages */}
+                <div className="bg-forest-50 p-6 md:p-8 rounded-2xl border border-border-light">
+                  <label className="flex items-center gap-2 text-body-lg font-bold text-primary mb-4">
+                    <FiMessageCircle className="text-accent" /> Languages Known
+                  </label>
+                  <div className="flex flex-wrap gap-2 mb-5">
                     {formData.languages.map((lang, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center gap-2 px-4 py-2 bg-purple-200 text-purple-900 rounded-full font-medium"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-primary border border-border-default rounded-full text-sm font-semibold shadow-sm"
                       >
                         <span>{lang}</span>
                         <button
                           type="button"
                           onClick={() => handleLanguageRemove(idx)}
-                          className="hover:text-purple-700 font-bold text-lg"
+                          className="w-5 h-5 rounded-full bg-forest-50 text-text-muted hover:text-danger hover:bg-red-50 flex items-center justify-center transition-colors"
                         >
-                          ✕
+                          <FiX className="w-3 h-3" />
                         </button>
                       </div>
                     ))}
@@ -190,125 +194,152 @@ const MediatorProfile = () => {
                   <button
                     type="button"
                     onClick={handleLanguageAdd}
-                    className="w-full px-4 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 font-semibold transition"
+                    className="btn px-4 py-2.5 bg-white border border-border-default text-primary hover:border-accent shadow-sm"
                   >
                     + Add Language
                   </button>
                 </div>
 
-                {/* Other Fields */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
-                  <textarea
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows="4"
-                    placeholder="Write about yourself..."
-                  />
+                {/* Info Fields */}
+                <div className="space-y-5">
+                  <div>
+                    <label className="form-label text-text-secondary">Bio <span className="font-normal text-text-muted">(Required)</span></label>
+                    <textarea
+                      name="bio"
+                      value={formData.bio}
+                      onChange={handleInputChange}
+                      className="form-textarea"
+                      rows="4"
+                      placeholder="Write a short description about yourself and your mediation style..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="form-label text-text-secondary">Phone Number</label>
+                    <div className="relative">
+                      <FiPhone className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        className="form-input !pl-11"
+                        placeholder="Enter your contact number"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="form-label text-text-secondary">Experience Details</label>
+                    <textarea
+                      name="experience"
+                      value={formData.experience}
+                      onChange={handleInputChange}
+                      className="form-textarea"
+                      rows="3"
+                      placeholder="E.g., 5 years guiding in Paris..."
+                    />
+                  </div>
+                  
+                  <div className="flex items-center gap-3 pt-2">
+                    <input 
+                      type="checkbox" 
+                      id="isAvailable" 
+                      name="isAvailable"
+                      checked={formData.isAvailable} 
+                      onChange={handleInputChange}
+                      className="w-5 h-5 rounded border-gray-300 text-accent focus:ring-accent"
+                    />
+                    <label htmlFor="isAvailable" className="text-body-sm font-medium text-text-primary cursor-pointer">
+                      I am currently available for new bookings
+                    </label>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter phone number"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Experience</label>
-                  <textarea
-                    name="experience"
-                    value={formData.experience}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows="3"
-                    placeholder="Describe your experience..."
-                  />
-                </div>
-
-                <div className="flex gap-3 pt-4 border-t-2 border-gray-200">
+                <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-border-light">
                   <button
                     onClick={handleSaveProfile}
-                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 font-bold text-lg transition"
+                    className="flex-1 btn-cta group"
                   >
-                    <BiSave className="w-5 h-5" />
+                    <BiSave className="w-5 h-5 group-hover:scale-110 transition-transform" />
                     Save Changes
                   </button>
                   <button
                     onClick={() => setIsEditing(false)}
-                    className="flex-1 px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 font-bold text-lg transition"
+                    className="flex-1 btn-ghost"
                   >
                     Cancel
                   </button>
                 </div>
               </div>
             ) : (
-              // View Mode
-              <div className="space-y-6">
-                {/* Cost Per Hour Card */}
-                <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-8 text-white shadow-lg">
-                  <p className="text-blue-100 text-sm font-semibold mb-1">💰 Your Hourly Rate</p>
-                  <h2 className="text-5xl font-bold">Rs. {profile?.costPerHour || 0}</h2>
-                  <p className="text-blue-100 text-sm mt-3">Per hour for language mediation services</p>
-                </div>
-
-                {/* Languages Card */}
-                <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-8 text-white shadow-lg">
-                  <p className="text-purple-100 text-sm font-semibold mb-3">🗣️ Languages Known</p>
-                  {profile?.languages && profile.languages.length > 0 ? (
-                    <div className="flex flex-wrap gap-3">
-                      {profile.languages.map((lang, idx) => (
-                        <span
-                          key={idx}
-                          className="px-4 py-2 bg-white/20 backdrop-blur text-white rounded-full font-semibold text-lg"
-                        >
-                          {lang}
-                        </span>
-                      ))}
+              <div className="space-y-8 animate-fade-in">
+                {/* Highlight Cards */}
+                <div className="grid sm:grid-cols-2 gap-5">
+                  <div className="bg-gradient-sky rounded-2xl p-6 text-white shadow-elevated relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3" />
+                    <p className="text-sky-50 text-body-sm font-semibold mb-2 flex items-center gap-1.5 opacity-90"><FiDollarSign /> Hourly Rate</p>
+                    <h2 className="text-display-md font-bold mb-1">₹{profile?.costPerHour || 0}</h2>
+                    <p className="text-sky-50 text-caption opacity-90">Per hour for mediation services</p>
+                  </div>
+                  
+                  <div className="bg-gradient-forest rounded-2xl p-6 text-white shadow-elevated relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3" />
+                    <p className="text-forest-100 text-body-sm font-semibold mb-2 flex items-center gap-1.5 opacity-90"><FiMessageCircle /> Languages</p>
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {profile?.languages && profile.languages.length > 0 ? (
+                        profile.languages.map((lang, idx) => (
+                          <span key={idx} className="badge bg-white/10 text-white border border-white/20 backdrop-blur-sm">
+                            {lang}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-forest-200 text-caption italic">No languages added</span>
+                      )}
                     </div>
-                  ) : (
-                    <p className="text-purple-100">No languages added yet. Click Edit Profile to add them.</p>
-                  )}
+                  </div>
                 </div>
 
-                {/* Other Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-2 gap-8 pt-4">
                   <div>
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Bio</h3>
-                    <p className="text-gray-900">{profile?.bio || 'No bio added yet'}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Phone</h3>
-                    <p className="text-gray-900">{profile?.phone || 'Not provided'}</p>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Status</h3>
-                    <p className={`font-semibold ${profile?.isAvailable ? 'text-green-600' : 'text-red-600'}`}>
-                      {profile?.isAvailable ? '🟢 Available' : '🔴 Unavailable'}
+                    <h3 className="text-caption font-bold text-text-muted uppercase tracking-wider mb-2 flex items-center gap-2">
+                      <FiInfo /> Bio
+                    </h3>
+                    <p className="text-body-sm text-text-primary leading-relaxed bg-forest-50 p-4 rounded-xl min-h-[100px]">
+                      {profile?.bio || <span className="text-text-muted italic">No bio provided</span>}
                     </p>
                   </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-caption font-bold text-text-muted uppercase tracking-wider mb-2 flex items-center gap-2">
+                        <FiPhone /> Contact
+                      </h3>
+                      <p className="text-body-sm font-medium text-text-primary">{profile?.phone || <span className="text-text-muted italic">Not provided</span>}</p>
+                    </div>
+
+                    <div>
+                      <h3 className="text-caption font-bold text-text-muted uppercase tracking-wider mb-2">Availability</h3>
+                      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold ${
+                        profile?.isAvailable ? 'bg-forest-100 text-forest-800' : 'bg-red-50 text-danger'
+                      }`}>
+                        <span className={`w-2 h-2 rounded-full ${profile?.isAvailable ? 'bg-success' : 'bg-danger'}`} />
+                        {profile?.isAvailable ? 'Accepting Bookings' : 'Unavailable'}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className="text-sm font-medium text-gray-500 mb-2">Experience</h3>
-                  <p className="text-gray-900">{profile?.experience || 'No experience added yet'}</p>
+                <div className="pt-2">
+                  <h3 className="text-caption font-bold text-text-muted uppercase tracking-wider mb-2">Experience</h3>
+                  <p className="text-body-sm text-text-primary leading-relaxed bg-forest-50 p-4 rounded-xl min-h-[80px]">
+                    {profile?.experience || <span className="text-text-muted italic">No experience added yet</span>}
+                  </p>
                 </div>
 
-                <div className="pt-4">
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="w-full px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-bold text-lg transition"
-                  >
-                    ✏️ Edit Profile
+                <div className="pt-8 border-t border-border-light text-center">
+                  <button onClick={() => setIsEditing(true)} className="btn-cta-lg w-full sm:w-auto min-w-[250px]">
+                    Update Profile
                   </button>
                 </div>
               </div>
@@ -316,7 +347,7 @@ const MediatorProfile = () => {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

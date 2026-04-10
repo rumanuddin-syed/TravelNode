@@ -1,69 +1,49 @@
-import React, { useState } from 'react'
-import { FiPlus, FiMinus } from 'react-icons/fi'
+import React, { useState } from 'react';
+import { FiPlus, FiMinus } from 'react-icons/fi';
 
 const FaqCard = ({ item, index }) => {
-  const [isOpen, setIsOpen] = useState(index === 0); // Open first FAQ by default
-
-  const toggleOpen = () => {
-    setIsOpen(!isOpen);
-  }
+  const [isOpen, setIsOpen] = useState(index === 0);
 
   return (
-    <div 
-      className={`group relative bg-white rounded-xl border border-gray-200 transition-all duration-300 hover:shadow-lg ${
-        isOpen ? 'shadow-md border-BaseColor/20' : ''
-      }`}
-    >
-      {/* Gradient border on hover - using BaseColor */}
-      <div className="absolute inset-0 bg-gradient-to-r from-BaseColor to-BHoverColor opacity-0 group-hover:opacity-5 transition-opacity rounded-xl pointer-events-none"></div>
-      
-      {/* Question Header */}
+    <div className={`card overflow-hidden transition-all duration-300 ${isOpen ? 'border-accent/30 shadow-card-hover' : ''}`}>
+      {/* Question */}
       <button
-        onClick={toggleOpen}
-        className="w-full px-4 sm:px-6 py-4 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-BaseColor/20 rounded-xl relative z-10"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-5 py-4 flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-accent/20 rounded-2xl"
       >
-        <div className="flex items-start sm:items-center space-x-3 flex-1">
-          {/* Question number - using BaseColor */}
-          <span className={`flex-shrink-0 w-8 h-8 rounded-full bg-BaseColor text-white flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-            isOpen ? 'scale-110 shadow-md' : ''
+        <div className="flex items-center gap-3 flex-1">
+          <span className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-caption font-bold transition-all duration-300 ${
+            isOpen ? 'bg-primary text-white' : 'bg-forest-100 text-forest-700'
           }`}>
             {index + 1}
           </span>
-          
-          {/* Question text */}
-          <h4 className={`text-sm sm:text-base lg:text-lg font-semibold transition-colors duration-300 pr-4 ${
-            isOpen ? 'text-BaseColor' : 'text-gray-800'
+          <h4 className={`text-body-sm sm:text-body-md font-semibold transition-colors duration-200 pr-4 ${
+            isOpen ? 'text-primary' : 'text-text-primary'
           }`}>
             {item.question}
           </h4>
         </div>
 
-        {/* Toggle icon with animation - using BaseColor */}
-        <div className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
-          isOpen 
-            ? 'bg-BaseColor text-white rotate-180' 
-            : 'bg-gray-100 text-gray-600 group-hover:bg-gray-200'
+        <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
+          isOpen ? 'bg-accent text-white' : 'bg-forest-50 text-forest-600 hover:bg-forest-100'
         }`}>
-          {isOpen ? <FiMinus className="w-3 h-3 sm:w-4 sm:h-4" /> : <FiPlus className="w-3 h-3 sm:w-4 sm:h-4" />}
+          {isOpen ? <FiMinus className="w-4 h-4" /> : <FiPlus className="w-4 h-4" />}
         </div>
       </button>
 
-      {/* Answer with conditional rendering instead of CSS animation */}
+      {/* Answer */}
       {isOpen && (
-        <div className="px-4 sm:px-6 pb-4 pl-[3.5rem] sm:pl-[4.5rem] animate-fadeIn">
-          <div className="relative">
-            {/* Decorative line - using BaseColor */}
-            <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-BaseColor to-BHoverColor rounded-full"></div>
-            
-            {/* Answer text */}
-            <p className="text-gray-600 text-sm sm:text-base leading-relaxed pl-4">
+        <div className="px-5 pb-5 pl-16 animate-fade-in">
+          <div className="relative pl-4">
+            <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-accent to-cta rounded-full" />
+            <p className="text-body-sm text-text-secondary leading-relaxed">
               {item.content}
             </p>
           </div>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default FaqCard
+export default FaqCard;
