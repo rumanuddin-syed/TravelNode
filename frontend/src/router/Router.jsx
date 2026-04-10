@@ -21,6 +21,7 @@ import MediatorsList from '../pages/MediatorsList'
 import MediatorManagement from '../Dashboard/AdminPanel/MediatorManagement'
 import MediatorCostManager from '../Dashboard/AdminPanel/MediatorCostManager'
 import AdminDashboard from '../Dashboard/AdminPanel/AdminDashboard'
+import AdminReviews from '../Dashboard/AdminPanel/AdminReviews'
 import ForgotPassword from '../pages/ForgotPassword';
 import ResetPassword from '../pages/ResetPassword';
 import NotFound from '../pages/NotFound'  
@@ -32,6 +33,7 @@ const Router = () => {
         <Route path='/home' element={<Home />} />
         <Route path='/my-account' element={<MyAccount />} />
         <Route path='/admin-dashboard' element={<AdminDashboard />} />
+        <Route path='/admin-reviews' element={<AdminReviews />} />
         <Route path='/all-booking' element={<Bookings />} />
         <Route path='/all-tours' element={<AdminTours />} />
         <Route path='/update-tour/:id' element={<UpdateTours />} />

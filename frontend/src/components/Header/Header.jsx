@@ -16,24 +16,21 @@ const Header = () => {
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollTop = useRef(0);
 
-  // Handle scroll effects
+  // Dynamic Transparency Logic
+  const isHomePage = location.pathname === "/home" || location.pathname === "/";
+  const shouldBeTransparent = isHomePage && !isScrolled;
+
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollTop = window.pageYOffset;
-      
-      // Update scrolled state for background change (only for shadow)
       setIsScrolled(currentScrollTop > 20);
-      
-      // Hide/show header on scroll direction
       if (currentScrollTop > lastScrollTop.current && currentScrollTop > 100) {
         setIsVisible(false);
       } else {
         setIsVisible(true);
       }
-      
       lastScrollTop.current = currentScrollTop;
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -47,22 +44,19 @@ const Header = () => {
 
   const handleMenuToggle = () => {
     setMenuOpen(!isMenuOpen);
-    // Prevent body scroll when menu is open
     if (!isMenuOpen) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
   };
 
-  // Clean up on unmount
   useEffect(() => {
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, []);
 
-  // Navigation items with icons
   const navItems = {
     user: [
       { path: "/home", label: "Home", icon: BiHome },
@@ -77,7 +71,7 @@ const Header = () => {
       { path: "/all-booking", label: "Bookings", icon: BiBookmark },
       { path: "/all-tours", label: "Tours", icon: BiMap },
       { path: "/create", label: "Create", icon: BiPlus },
-    ]
+    ],
   };
 
   const currentNavItems = role === "admin" ? navItems.admin : navItems.user;
@@ -90,121 +84,118 @@ const Header = () => {
     <>
       <header
         ref={headerRef}
-        className={`fixed w-full z-50 transition-all duration-500 bg-white shadow-sm ${
-          isScrolled ? "shadow-md py-2" : "py-4"
-        } ${isVisible ? "translate-y-0" : "-translate-y-full"}`}
+        className={`fixed w-full z-50 transition-all duration-300 bg-gradient-to-r from-forest-900 via-primary to-forest-800 border-b-2 border-cta shadow-elevated ${isVisible ? "translate-y-0" : "-translate-y-full"} ${isScrolled ? "py-2" : "py-3"}`}
       >
-        <nav className="max-w-7xl mx-auto px-6 lg:px-12">
+        <nav className="max-w-7xl mx-auto px-5 lg:px-8">
           <div className="flex items-center justify-between">
-            {/* Logo with animation */}
-            <div className="relative group">
+            {/* Logo */}
+            <div className="flex-shrink-0">
               {role === "admin" ? (
-                <div className="relative group flex items-center">
-                {/* Glow Effect */}
-                <div className="absolute -inset-2 bg-gradient-to-r from-BaseColor to-BHoverColor rounded-xl blur-lg opacity-30 group-hover:opacity-60 transition duration-300"></div>
-
-                {/* Logo */}
-                <img
-                  src={Logo}
-                  alt="Travel Node Logo"
-                  className="relative h-24 md:h-28 lg:h-32 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-                />
-              </div>
+                <div className="flex items-center gap-2">
+                  <img
+                    src={Logo}
+                    alt="TravelNode"
+                    className="h-10 md:h-12 w-auto object-contain brightness-0 invert"
+                  />
+                  <span className="bg-cta text-forest-900 text-caption font-bold px-3 py-1 rounded-lg shadow-sm">Admin</span>
+                </div>
               ) : (
-                <Link to={"/"} className="block">
-                  <div className="h-10 md:h-12 transform transition-transform hover:scale-105">
-                    <img src={Logo} alt="Logo" className="h-full w-auto" />
-                  </div>
+                <Link to="/" className="block">
+                  <img
+                    src={Logo}
+                    alt="TravelNode"
+                    className="h-9 md:h-11 w-auto object-contain transition-opacity hover:opacity-80 brightness-0 invert"
+                  />
                 </Link>
               )}
             </div>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-1">
-              {currentNavItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`relative px-4 py-2 mx-1 rounded-full text-sm font-medium transition-all duration-300 group ${
-                      isActivePath(item.path)
-                        ? "text-BaseColor bg-BaseColor/10"
-                        : "text-gray-700 hover:text-BaseColor hover:bg-BaseColor/10"
-                    }`}
-                  >
-                    <span className="flex items-center space-x-2">
-                      <Icon className="w-4 h-4" />
-                      <span>{item.label}</span>
-                    </span>
-                    {isActivePath(item.path) && (
-                      <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-BaseColor rounded-full"></span>
-                    )}
-                  </Link>
-                );
-              })}
+            <div className="hidden lg:flex items-center">
+              <div className="flex items-center gap-1 rounded-xl px-2 py-1">
+                {currentNavItems.map((item) => {
+                  const isActive = isActivePath(item.path);
+                  return (
+                     <Link
+                      key={item.path}
+                      to={item.path}
+                      className={`relative px-4 py-2 rounded-lg text-body-sm font-bold transition-all duration-200 ${
+                        isActive
+                          ? "bg-white text-primary shadow-sm"
+                          : "text-white/80 hover:text-white hover:bg-white/15"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Desktop Right Section */}
-            <div className="hidden md:flex items-center space-x-3">
+            <div className="hidden lg:flex items-center gap-3">
               {user ? (
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center gap-2">
                   <Link
                     to={
-                      role === "user" ? "/my-account" :
-                      role === "mediator" ? "/mediator-dashboard" :
-                      "#"
+                      role === "user"
+                        ? "/my-account"
+                        : role === "mediator"
+                        ? "/mediator-dashboard"
+                        : "#"
                     }
-                    className="flex items-center space-x-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-all duration-300 group"
+                    className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl transition-all duration-200 group bg-white/10 hover:bg-white/20 border border-white/10"
                   >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-BaseColor to-BHoverColor flex items-center justify-center text-white group-hover:shadow-lg transform group-hover:scale-105 transition-all duration-300">
-                      <BiUser className="w-5 h-5" />
+                    <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white text-sm font-bold shadow-sm">
+                      {user.username?.charAt(0).toUpperCase()}
                     </div>
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                    <span className="text-body-sm font-bold text-white">
                       {user.username}
                     </span>
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center space-x-2 px-4 py-2 rounded-full text-gray-600 hover:text-BaseColor hover:bg-BaseColor/10 transition-all duration-300 group"
+                    className="p-2.5 rounded-xl transition-all duration-200 text-white/70 hover:text-white hover:bg-red-500/20"
+                    title="Logout"
                   >
-                    <BiLogOut className="w-5 h-5 transform group-hover:rotate-12 transition-transform" />
-                    <span className="text-sm font-medium">Logout</span>
+                    <BiLogOut className="w-5 h-5" />
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center gap-2">
                   <Link to="/login">
-                    <button className="px-5 py-2 rounded-full text-sm font-medium text-gray-700 hover:text-BaseColor hover:bg-BaseColor/10 transition-all duration-300">
-                      Login
+                    <button className="px-5 py-2.5 rounded-xl text-body-sm font-bold text-white/90 hover:text-white hover:bg-white/15 transition-all duration-200">
+                      Sign In
                     </button>
                   </Link>
                   <Link to="/register">
-                    <button className="px-5 py-2 rounded-full text-sm font-medium text-white bg-gradient-to-r from-BaseColor to-BHoverColor hover:from-BaseColor/90 hover:to-BHoverColor/90 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
-                      Register
+                    <button className="bg-cta text-forest-900 border border-cta hover:bg-sky-400 font-bold px-5 py-2.5 rounded-xl text-body-sm transition-all duration-300 shadow-sm">
+                      Get Started
                     </button>
                   </Link>
                 </div>
               )}
             </div>
 
-            {/* Mobile Menu Button */}
-            <div className="flex items-center space-x-3 md:hidden">
+            {/* Mobile Right */}
+            <div className="flex items-center gap-2 lg:hidden">
               {user && (
                 <Link
                   to={
-                    role === "user" ? "/my-account" :
-                    role === "mediator" ? "/mediator-dashboard" :
-                    "#"
+                    role === "user"
+                      ? "/my-account"
+                      : role === "mediator"
+                      ? "/mediator-dashboard"
+                      : "#"
                   }
-                  className="w-8 h-8 rounded-full bg-gradient-to-r from-BaseColor to-BHoverColor flex items-center justify-center text-white shadow-md"
+                  className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold bg-white/20 text-white border border-white/30"
                 >
-                  <BiUser className="w-5 h-5" />
+                  {user.username?.charAt(0).toUpperCase()}
                 </Link>
               )}
               <button
                 onClick={handleMenuToggle}
-                className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors duration-300"
+                className="p-2 rounded-xl transition-colors duration-200 bg-white/10 text-white hover:bg-white/20 border border-white/20"
               >
                 {isMenuOpen ? (
                   <IoClose className="w-6 h-6" />
@@ -217,9 +208,9 @@ const Header = () => {
         </nav>
       </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Overlay */}
       <div
-        className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-500 md:hidden ${
+        className={`fixed inset-0 bg-forest-900/40 backdrop-blur-sm z-40 transition-opacity duration-300 lg:hidden ${
           isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={handleMenuToggle}
@@ -227,103 +218,107 @@ const Header = () => {
 
       {/* Mobile Menu Panel */}
       <div
-        className={`fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-500 ease-out md:hidden ${
+        className={`fixed top-0 right-0 h-full w-[320px] bg-white shadow-elevated z-50 transform transition-transform duration-300 ease-smooth lg:hidden ${
           isMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Mobile Menu Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-100">
-            <div className="h-8">
-              <img src={Logo} alt="Logo" className="h-full w-auto" />
-            </div>
+          <div className="flex items-center justify-between p-5 border-b border-border-light">
+            <img src={Logo} alt="TravelNode" className="h-8 w-auto" />
             <button
               onClick={handleMenuToggle}
-              className="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors duration-300"
+              className="btn-icon"
             >
-              <IoClose className="w-6 h-6 text-gray-700" />
+              <IoClose className="w-5 h-5 text-text-secondary" />
             </button>
           </div>
 
-          {/* Mobile Menu Content */}
-          <div className="flex-1 overflow-y-auto py-6">
-            <ul className="space-y-2 px-4">
+          {/* Mobile Nav Items */}
+          <div className="flex-1 overflow-y-auto py-4 px-4">
+            <div className="space-y-1">
               {currentNavItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = isActivePath(item.path);
-                
                 return (
-                  <li key={item.path}>
-                    <Link
-                      to={item.path}
-                      onClick={handleMenuToggle}
-                      className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                        isActive
-                          ? "bg-gradient-to-r from-BaseColor/10 to-BHoverColor/10 text-BaseColor"
-                          : "text-gray-700 hover:bg-gray-50"
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={handleMenuToggle}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                      isActive
+                        ? "bg-forest-100 text-primary font-bold"
+                        : "text-text-secondary font-semibold hover:bg-forest-50 hover:text-primary"
+                    }`}
+                  >
+                    <Icon
+                      className={`w-5 h-5 ${
+                        isActive ? "text-accent" : "text-text-muted"
                       }`}
-                    >
-                      <Icon className={`w-5 h-5 ${isActive ? "text-BaseColor" : "text-gray-400"}`} />
-                      <span className="text-sm font-medium">{item.label}</span>
-                      {isActive && (
-                        <span className="ml-auto w-2 h-2 bg-BaseColor rounded-full"></span>
-                      )}
-                    </Link>
-                  </li>
+                    />
+                    <span className="text-body-sm">{item.label}</span>
+                    {isActive && (
+                      <span className="ml-auto w-1.5 h-1.5 bg-accent rounded-full" />
+                    )}
+                  </Link>
                 );
               })}
-            </ul>
+            </div>
           </div>
 
           {/* Mobile Menu Footer */}
-          <div className="p-6 border-t border-gray-100">
+          <div className="p-5 border-t border-border-light bg-background/50">
             {user ? (
               <div className="space-y-3">
                 <Link
                   to={
-                    role === "user" ? "/my-account" :
-                    role === "mediator" ? "/mediator-dashboard" :
-                    "#"
+                    role === "user"
+                      ? "/my-account"
+                      : role === "mediator"
+                      ? "/mediator-dashboard"
+                      : "#"
                   }
                   onClick={handleMenuToggle}
-                  className="block"
+                  className="flex items-center gap-3 p-3 bg-white border border-border-light shadow-sm rounded-xl hover:border-forest-200 transition-colors"
                 >
-                  <div className="flex items-center space-x-3 px-4 py-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-BaseColor to-BHoverColor flex items-center justify-center text-white">
-                      <BiUser className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{user.username}</p>
-                      <p className="text-xs text-gray-500">{role}</p>
-                    </div>
+                  <div className="w-10 h-10 rounded-xl bg-gradient-forest flex items-center justify-center text-white font-bold">
+                    {user.username?.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="text-body-sm font-bold text-text-primary">
+                      {user.username}
+                    </p>
+                    <p className="text-caption font-semibold text-text-muted capitalize">
+                      {role}
+                    </p>
                   </div>
                 </Link>
                 {role === "mediator" && (
                   <Link
                     to="/mediator-profile"
                     onClick={handleMenuToggle}
-                    className="w-full block px-4 py-3 rounded-xl text-gray-700 bg-blue-50 hover:bg-blue-100 text-sm font-medium transition-all duration-300"
+                    className="block w-full text-center btn-secondary !py-2.5 text-body-sm shadow-sm"
                   >
                     Edit Profile
                   </Link>
                 )}
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-xl text-gray-600 hover:text-BaseColor hover:bg-BaseColor/10 transition-all duration-300"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-danger bg-red-50 hover:bg-red-100 transition-colors text-body-sm font-bold"
                 >
                   <BiLogOut className="w-5 h-5" />
-                  <span className="text-sm font-medium">Logout</span>
+                  Logout
                 </button>
               </div>
             ) : (
-              <div className="space-y-3">
+               <div className="space-y-2.5">
                 <Link
                   to="/login"
                   onClick={handleMenuToggle}
                   className="block w-full"
                 >
-                  <button className="w-full px-4 py-3 rounded-xl text-sm font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 transition-all duration-300">
-                    Login
+                  <button className="w-full btn-secondary text-body-sm shadow-sm font-bold">
+                    Sign In
                   </button>
                 </Link>
                 <Link
@@ -331,8 +326,8 @@ const Header = () => {
                   onClick={handleMenuToggle}
                   className="block w-full"
                 >
-                  <button className="w-full px-4 py-3 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-BaseColor to-BHoverColor hover:from-BaseColor/90 hover:to-BHoverColor/90 shadow-md transition-all duration-300">
-                    Register
+                  <button className="w-full btn-cta text-body-sm shadow-sm">
+                    Get Started
                   </button>
                 </Link>
               </div>
@@ -341,8 +336,8 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Spacer to prevent content from hiding under fixed header */}
-      <div className="h-20"></div>
+      {/* Spacer so content doesn't jump when the fixed header switches styles. Always present. */}
+      <div className={`${isScrolled ? "h-[68px]" : "h-[76px]"}`} />
     </>
   );
 };

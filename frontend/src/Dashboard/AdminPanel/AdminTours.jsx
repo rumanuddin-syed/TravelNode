@@ -16,23 +16,28 @@ const AdminTours = () => {
   }, [page, tourCount, tours]);
 
   return (
-    <div className="py-8 px-4 md:px-6 lg:px-8 w-full bg-gray-50 min-h-screen">
+    <div className="bg-background min-h-screen py-16 px-4 md:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div className="mb-8">
+          <h2 className="text-display-sm text-text-primary mb-2">Manage Tours</h2>
+          <p className="text-body-sm text-text-secondary">View, edit, or delete existing tours.</p>
+        </div>
+
+        <div className="card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-100 border-b border-gray-200">
+              <thead className="bg-forest-50 border-b border-border-light table-header">
                 <tr>
-                  <th className="px-4 py-4 text-left text-sm font-semibold text-gray-600">Photo</th>
-                  <th className="px-4 py-4 text-left text-sm font-semibold text-gray-600">Title</th>
-                  <th className="px-4 py-4 text-left text-sm font-semibold text-gray-600">City</th>
-                  <th className="px-4 py-4 text-left text-sm font-semibold text-gray-600">Featured</th>
-                  <th className="px-4 py-4 text-left text-sm font-semibold text-gray-600">Max People</th>
-                  <th className="px-4 py-4 text-left text-sm font-semibold text-gray-600">Reviews</th>
-                  <th className="px-4 py-4 text-left text-sm font-semibold text-gray-600">Actions</th>
+                  <th className="px-5 py-4 text-left text-caption font-bold text-text-muted uppercase tracking-wider">Photo</th>
+                  <th className="px-5 py-4 text-left text-caption font-bold text-text-muted uppercase tracking-wider">Title</th>
+                  <th className="px-5 py-4 text-left text-caption font-bold text-text-muted uppercase tracking-wider">City</th>
+                  <th className="px-5 py-4 text-left text-caption font-bold text-text-muted uppercase tracking-wider">Featured</th>
+                  <th className="px-5 py-4 text-left text-caption font-bold text-text-muted uppercase tracking-wider">Max People</th>
+                  <th className="px-5 py-4 text-left text-caption font-bold text-text-muted uppercase tracking-wider">Reviews</th>
+                  <th className="px-5 py-4 text-left text-caption font-bold text-text-muted uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-border-light">
                 {tours?.map((tour) => (
                   <AdminToursCards tour={tour} key={tour._id} />
                 ))}
@@ -42,15 +47,15 @@ const AdminTours = () => {
 
           {/* Pagination */}
           {pageCount > 1 && (
-            <div className="flex items-center justify-center gap-2 py-6 bg-white border-t border-gray-100">
+            <div className="flex items-center justify-center gap-2 py-6 bg-white border-t border-border-light">
               {[...Array(pageCount).keys()].map((number) => (
                 <button
                   key={number}
                   onClick={() => setPage(number)}
-                  className={`w-10 h-10 rounded-xl text-sm font-medium transition-all duration-300 ${
+                  className={`w-10 h-10 rounded-xl text-sm font-bold transition-all duration-200 ${
                     page === number
-                      ? "bg-gradient-to-r from-BaseColor to-BHoverColor text-white shadow-md"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      ? "bg-primary text-white shadow-sm"
+                      : "bg-forest-50 text-text-secondary hover:bg-forest-100 hover:text-primary"
                   }`}
                 >
                   {number + 1}

@@ -6,6 +6,10 @@ const reviewSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "Tour",
     },
+    tourId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Tour",
+    },
     username: {
       type: String,
       required: true,
@@ -20,6 +24,10 @@ const reviewSchema = new mongoose.Schema(
       min: 0,
       max: 5,
       default: 0,
+    },
+    isStarred: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

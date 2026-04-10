@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import { FaMapMarkerAlt, FaSearch } from "react-icons/fa";
-import { IoIosPricetags } from "react-icons/io";
+import { FaMapMarkerAlt } from "react-icons/fa";
+import { FiSearch, FiDollarSign } from "react-icons/fi";
 import { toast } from "react-toastify";
 import BASE_URL from "../../utils/config";
 import { useNavigate } from "react-router-dom";
@@ -25,12 +25,10 @@ const SearchBar = () => {
         const response = await fetch(
           `${BASE_URL}/tour/search?search=${searchTerm}&minPrice=${minPrice}&maxPrice=${maxPrice}`
         );
-        
         if (!response.ok) {
           toast.error("No Record Found!");
           return;
         }
-
         const result = await response.json();
         navigate(
           `/tours/search?search=${searchTerm}&minPrice=${minPrice}&maxPrice=${maxPrice}`,
@@ -44,94 +42,87 @@ const SearchBar = () => {
     }
   };
 
+  const popularCities = ["Paris", "Bali", "Tokyo", "New York", "Dubai"];
+
   return (
-    <div className="relative -mt-8 z-30">
-      <div className="bg-white rounded-2xl shadow-2xl p-4 md:p-6">
-        <div className="grid md:grid-cols-4 gap-4">
-          {/* Location Input */}
-          <div className="relative group">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              <FaMapMarkerAlt className="inline mr-2 text-BaseColor" />
-              Location
-            </label>
-            <div className="relative">
+    <div className="relative -mt-8 z-30 px-4">
+      <div className="max-w-5xl mx-auto">
+        <div className="card-elevated p-5 md:p-6">
+          <div className="grid md:grid-cols-4 gap-4">
+            {/* Location */}
+            <div>
+              <label className="form-label flex items-center gap-1.5">
+                <FaMapMarkerAlt className="w-3.5 h-3.5 text-accent" />
+                Destination
+              </label>
               <input
                 type="text"
                 placeholder="Where are you going?"
                 ref={cityRef}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-BaseColor focus:ring-2 focus:ring-BaseColor/20 transition-all duration-300 text-black placeholder-black"
+                className="form-input"
               />
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-BaseColor to-BHoverColor opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"></div>
             </div>
-          </div>
 
-          {/* Min Price Input */}
-          <div className="relative group">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              <IoIosPricetags className="inline mr-2 text-BaseColor" />
-              Min Price
-            </label>
-            <div className="relative">
+            {/* Min Price */}
+            <div>
+              <label className="form-label flex items-center gap-1.5">
+                <FiDollarSign className="w-3.5 h-3.5 text-accent" />
+                Min Price
+              </label>
               <input
                 type="number"
-                placeholder="Min Price"
+                placeholder="₹ Min"
                 ref={minPriceRef}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-BaseColor focus:ring-2 focus:ring-BaseColor/20 transition-all duration-300 text-black placeholder-black"
+                className="form-input"
               />
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-BaseColor to-BHoverColor opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"></div>
             </div>
-          </div>
 
-          {/* Max Price Input */}
-          <div className="relative group">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              <IoIosPricetags className="inline mr-2 text-BaseColor" />
-              Max Price
-            </label>
-            <div className="relative">
+            {/* Max Price */}
+            <div>
+              <label className="form-label flex items-center gap-1.5">
+                <FiDollarSign className="w-3.5 h-3.5 text-accent" />
+                Max Price
+              </label>
               <input
                 type="number"
-                placeholder="Max Price"
+                placeholder="₹ Max"
                 ref={maxPriceRef}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-BaseColor focus:ring-2 focus:ring-BaseColor/20 transition-all duration-300 text-black placeholder-black"
+                className="form-input"
               />
-              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-BaseColor to-BHoverColor opacity-0 group-hover:opacity-10 transition-opacity pointer-events-none"></div>
+            </div>
+
+            {/* Search Button */}
+            <div className="flex items-end">
+              <button
+                onClick={SubmitHandler}
+                disabled={isSearching}
+                className="w-full btn-cta"
+              >
+                {isSearching ? (
+                  <>
+                    <span className="spinner-cta" />
+                    Searching...
+                  </>
+                ) : (
+                  <>
+                    <FiSearch className="w-4 h-4" />
+                    Search
+                  </>
+                )}
+              </button>
             </div>
           </div>
 
-          {/* Search Button */}
-          <div className="flex items-end">
-            <button
-              onClick={SubmitHandler}
-              disabled={isSearching}
-              className="w-full bg-gradient-to-r from-BaseColor to-BHoverColor text-white px-6 py-3 rounded-xl font-semibold flex items-center justify-center space-x-2 hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isSearching ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Searching...</span>
-                </>
-              ) : (
-                <>
-                  <FaSearch className="w-4 h-4" />
-                  <span>Search</span>
-                </>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Popular Searches */}
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          <p className="text-xs text-gray-500 mb-2">Popular destinations:</p>
-          <div className="flex flex-wrap gap-2">
-            {['Paris', 'Bali', 'Tokyo', 'New York', 'Dubai'].map((city) => (
+          {/* Popular Tags */}
+          <div className="mt-4 pt-4 border-t border-border-light flex flex-wrap items-center gap-2">
+            <span className="text-caption text-text-muted">Popular:</span>
+            {popularCities.map((city) => (
               <button
                 key={city}
                 onClick={() => {
                   cityRef.current.value = city;
                 }}
-                className="px-3 py-1 bg-gray-100 hover:bg-BaseColor hover:text-white rounded-full text-xs text-gray-600 transition-colors"
+                className="tag-default !py-1 !px-3 text-caption"
               >
                 {city}
               </button>

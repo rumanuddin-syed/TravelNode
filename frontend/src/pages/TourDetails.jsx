@@ -1,231 +1,259 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import avatar from "../assets/images/avatar.jpg";
-import { FaPeopleGroup, FaLocationDot } from "react-icons/fa6";
-import { FaStar, FaMapPin, FaCity, FaDollarSign } from "react-icons/fa";
-import CalculateAvg from "../utils/CalculateAvg";
-import Booking from "../components/Booking/Booking";
-import TourTripPlanner from "../components/TourTripPlanner/TourTripPlanner";
-import { toast } from "react-toastify";
 import useFetch from "../hooks/useFetch";
 import BASE_URL from "../utils/config";
 import { AuthContext } from "../context/AuthContext";
+import { toast } from "react-toastify";
+import CalculateAvg from "../utils/CalculateAvg";
+import Booking from "../components/Booking/Booking";
+import TourTripPlanner from "../components/TourTripPlanner/TourTripPlanner";
+import RouteMap from "../components/Map/RouteMap";
+import { FaStar, FaMapMarkerAlt, FaRegClock, FaMoneyBillWave } from "react-icons/fa";
+import { FiUsers, FiMap, FiMessageCircle } from "react-icons/fi";
 
 const TourDetails = () => {
-  const { user } = useContext(AuthContext);
-  const reviewMsgRef = useRef();
-  const [tourRating, setTourRating] = useState(null);
   const { id } = useParams();
+  const reviewMsgRef = useRef("");
+  const [tourRating, setTourRating] = useState(null);
+  const [plannerVisible, setPlannerVisible] = useState(false);
+  const { user } = useContext(AuthContext);
+
+  const {
+    apiData: tour,
+    loading,
+    error,
+    refetch,
+  } = useFetch(`${BASE_URL}/tour/${id}`);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+    window.scrollTo(0, 0);
+  }, [tour]);
 
-  const { apiData: tour, error } = useFetch(`${BASE_URL}/tour/${id}`);
-  const {
-    title = "",
-    photo = "",
-    desc = "",
-    price = "",
-    reviews = [],
-    city = "",
-    distance = "",
-    maxGroupSize = "",
-    address = "",
-  } = tour || {};
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-forest-200 border-t-accent rounded-full animate-spin" />
+          <p className="text-body-lg font-medium text-text-muted">Loading tour details...</p>
+        </div>
+      </div>
+    );
+  }
 
-  const reviewsArray = Array.isArray(reviews) ? reviews : [];
-  const { totalRating, avgRating } = CalculateAvg(reviewsArray);
-  const options = { day: "numeric", month: "long", year: "numeric" };
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-background pt-20 text-center">
+        <div>
+          <div className="w-20 h-20 mx-auto bg-red-50 rounded-3xl flex items-center justify-center mb-6">
+            <span className="text-3xl">⚠️</span>
+          </div>
+          <h2 className="text-display-sm text-text-primary mb-2">Tour Not Found</h2>
+          <p className="text-body-lg text-text-secondary">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
-  const handleSubmit = async (e) => {
+  if (!tour) return null;
+
+  const { photo, title, desc, price, address, reviews, city, distance, maxGroupSize } = tour;
+  const { totalRating, avgRating } = CalculateAvg(reviews);
+
+  const submitHandler = async (e) => {
     e.preventDefault();
     const reviewText = reviewMsgRef.current.value;
 
     if (!user) {
-      toast.error("Please Sign In first");
+      toast.error("Please sign in to submit a review");
       return;
     }
-
-    if (!tourRating) {
-      toast.error("Please select a rating");
+    if (!tourRating || !reviewText) {
+      toast.error("Please provide a rating and a review message");
       return;
     }
 
     try {
-      const reviewData = {
+      const reviewObj = {
+        productId: id,
         username: user.username,
         reviewText,
         rating: tourRating,
       };
-      const response = await fetch(`${BASE_URL}/review/${id}`, {
+
+      const res = await fetch(`${BASE_URL}/review/${id}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(reviewData),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Keep it identical functional wise
+        },
+        body: JSON.stringify(reviewObj),
       });
-      const result = await response.json();
-      if (response.ok) {
-        toast.success("Review submitted!");
-        window.location.reload();
-      } else {
-        toast.error(result.message);
+
+      const result = await res.json();
+      if (!res.ok) {
+        return toast.error(result.message);
       }
+      toast.success(result.message);
+      reviewMsgRef.current.value = "";
+      setTourRating(null);
+      refetch();
     } catch (err) {
-      toast.error("Server not responding");
+      toast.error("Failed to submit review");
     }
   };
 
+  const handleTogglePlanner = () => {
+    setPlannerVisible(!plannerVisible);
+    setTimeout(() => {
+      document.getElementById('planner-section')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
   return (
-    <div className="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-3 gap-8">
+    <div className="bg-background min-h-screen pb-20">
+      {/* Hero Header */}
+      <section className="relative h-[60vh] min-h-[400px]">
+        <img src={photo} alt={title} className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-forest-900 via-forest-900/40 to-transparent" />
+        
+        <div className="absolute bottom-0 left-0 right-0 max-w-7xl mx-auto px-5 lg:px-8 pb-10">
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <span className="badge bg-cta/20 text-cta border border-cta/30 backdrop-blur-md">
+              <FaMapMarkerAlt className="mr-1" /> {city}
+            </span>
+            <span className="badge bg-white/20 text-white border border-white/30 backdrop-blur-md">
+              <FaStar className="mr-1 text-warning" /> {avgRating === 0 ? "New" : avgRating}
+            </span>
+          </div>
+          <h1 className="text-display-md lg:text-display-lg text-white font-bold mb-4 max-w-3xl leading-tight">
+            {title}
+          </h1>
+        </div>
+      </section>
+
+      <section className="max-w-7xl mx-auto px-5 lg:px-8 pt-10">
+        <div className="grid lg:grid-cols-3 gap-10">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Image */}
-            <div className="rounded-2xl overflow-hidden shadow-xl">
-              <img src={photo} alt={title} className="w-full h-[400px] object-cover" />
-            </div>
+          <div className="lg:col-span-2 space-y-10">
+            {/* Overview Card */}
+            <div className="card p-6 md:p-8">
+              <div className="flex items-center justify-between border-b border-border-light pb-6 mb-6">
+                <h2 className="text-display-sm">Overview</h2>
+                <button
+                  onClick={handleTogglePlanner}
+                  className="btn bg-accent/10 text-primary hover:bg-accent/20 text-body-sm"
+                >
+                  <FiMap className="w-4 h-4 mr-1.5" />
+                  {plannerVisible ? "Hide Trip Planner" : "Try AI Trip Planner"}
+                </button>
+              </div>
 
-            {/* Tour Info Card */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">{title}</h1>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div className="flex items-center space-x-2 text-gray-600">
-                  <FaMapPin className="text-BaseColor" />
-                  <span className="text-sm">{address}</span>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 text-body-sm">
+                <div className="space-y-1">
+                  <p className="flex items-center gap-2 text-text-muted"><FaMoneyBillWave className="text-accent" /> Price</p>
+                  <p className="font-bold text-text-primary">₹{price} / person</p>
                 </div>
-                <div className="flex items-center space-x-2 text-gray-600">
-                  <FaCity className="text-BaseColor" />
-                  <span className="text-sm">{city}</span>
+                <div className="space-y-1">
+                  <p className="flex items-center gap-2 text-text-muted"><FiUsers className="text-accent" /> Max Group</p>
+                  <p className="font-bold text-text-primary">{maxGroupSize} People</p>
                 </div>
-                <div className="flex items-center space-x-2 text-gray-600">
-                  <FaLocationDot className="text-BaseColor" />
-                  <span className="text-sm">{distance} km</span>
+                <div className="space-y-1">
+                  <p className="flex items-center gap-2 text-text-muted"><FaRegClock className="text-accent" /> Distance</p>
+                  <p className="font-bold text-text-primary">{distance} km</p>
                 </div>
-                <div className="flex items-center space-x-2 text-gray-600">
-                  <FaPeopleGroup className="text-BaseColor" />
-                  <span className="text-sm">Max {maxGroupSize}</span>
+                <div className="space-y-1">
+                  <p className="flex items-center gap-2 text-text-muted"><FaStar className="text-warning" /> Rating</p>
+                  <p className="font-bold text-text-primary">{avgRating} ({reviews?.length} Reviews)</p>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between border-y border-gray-100 py-4 mb-6">
-                <div className="flex items-center space-x-2">
-                  <div className="flex text-yellow-400">
-                    {[...Array(5)].map((_, i) => (
-                      <FaStar key={i} className={i < Math.round(avgRating) ? "text-yellow-400" : "text-gray-200"} />
-                    ))}
+              <div className="prose prose-forest max-w-none text-text-secondary leading-relaxed">
+                <p>{desc}</p>
+              </div>
+
+              {/* Map embedded */}
+              <div className="mt-8 rounded-2xl overflow-hidden border border-border-light">
+                <RouteMap destination={address} />
+              </div>
+            </div>
+
+            {/* AI Trip Planner Section */}
+            {plannerVisible && (
+              <div id="planner-section" className="animate-fade-in scroll-mt-24">
+                <div className="bg-gradient-forest rounded-2xl p-1 mb-10 shadow-elevated">
+                  <div className="bg-surface rounded-xl overflow-hidden h-full">
+                    <TourTripPlanner tour={tour} />
                   </div>
-                  <span className="text-gray-600">
-                    {avgRating} ({reviewsArray.length} reviews)
-                  </span>
                 </div>
-                <div className="text-2xl font-bold text-BaseColor">Rs. {price}</div>
               </div>
+            )}
 
-              <div>
-                <h3 className="text-xl font-semibold mb-3">Description</h3>
-                <p className="text-gray-600 leading-relaxed">{desc}</p>
-              </div>
-            </div>
+            {/* Reviews Section */}
+            <div className="card p-6 md:p-8">
+              <h2 className="text-display-sm mb-6 flex items-center gap-2">
+                <FiMessageCircle className="text-accent" /> Reviews ({reviews?.length})
+              </h2>
 
-            {/* Map */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h3 className="text-xl font-semibold mb-4">Location</h3>
-              <iframe
-                title="Tour Location Map"
-                src={`https://www.google.com/maps?q=${encodeURIComponent(
-                  address || city
-                )}&output=embed`}
-                width="100%"
-                height="300"
-                style={{ border: 0, borderRadius: "1rem" }}
-                allowFullScreen=""
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              ></iframe>
-            </div>
-
-            {/* Reviews */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h3 className="text-xl font-semibold mb-6">
-                Reviews ({reviewsArray.length})
-              </h3>
-
-              {/* Review Form */}
-              <form onSubmit={handleSubmit} className="mb-8">
-                <div className="flex items-center space-x-2 mb-4">
-                  <span className="text-gray-700 font-medium">Your rating:</span>
-                  {[1, 2, 3, 4, 5].map((star) => (
+              {/* Write Review */}
+              <div className="bg-forest-50 rounded-2xl p-6 mb-8">
+                <h4 className="font-semibold text-text-primary mb-4 text-body-md">Leave a Review</h4>
+                <div className="flex items-center gap-2 mb-4">
+                  {[1, 2, 3, 4, 5].map((num) => (
                     <button
-                      key={star}
-                      type="button"
-                      onClick={() => setTourRating(star)}
-                      className={`text-2xl ${
-                        tourRating >= star ? "text-yellow-400" : "text-gray-300"
-                      } hover:text-yellow-400 transition-colors`}
+                      key={num}
+                      onClick={() => setTourRating(num)}
+                      className="p-1 transition-transform hover:scale-110"
                     >
-                      <FaStar />
+                      <FaStar className={`w-6 h-6 ${tourRating >= num ? "text-warning" : "text-border-default"}`} />
                     </button>
                   ))}
+                  <span className="text-caption text-text-muted ml-2 font-medium">Select Rating</span>
                 </div>
-
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="text"
+                
+                <form onSubmit={submitHandler} className="relative">
+                  <textarea
                     ref={reviewMsgRef}
-                    placeholder="Share your thoughts..."
-                    className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-BaseColor/20 focus:border-BaseColor transition"
+                    className="form-textarea w-full pl-4 pr-32 py-3"
+                    placeholder="Share your thoughts about this tour..."
+                    rows="3"
                   />
-                  <button
-                    type="submit"
-                    className="px-6 py-3 bg-gradient-to-r from-BaseColor to-BHoverColor text-white font-semibold rounded-xl hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300"
-                  >
+                  <button type="submit" className="absolute right-3 top-3 bottom-auto btn-cta !py-2 !px-4">
                     Submit
                   </button>
-                </div>
-              </form>
+                </form>
+              </div>
 
-              {/* Reviews List */}
+              {/* Review List */}
               <div className="space-y-6">
-                {reviewsArray.map((review, index) => (
-                  <div key={index} className="border-b border-gray-100 last:border-0 pb-6">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <img src={avatar} alt={review.username} className="w-12 h-12 rounded-full object-cover" />
-                      <div>
-                        <h5 className="font-semibold">{review.username}</h5>
-                        <p className="text-sm text-gray-500">
-                          {new Date(review.createdAt).toLocaleDateString("en-US", options)}
-                        </p>
-                      </div>
-                      <div className="ml-auto flex items-center space-x-1">
-                        <span className="font-medium">{review.rating}</span>
-                        <FaStar className="text-yellow-400" />
-                      </div>
+                {reviews?.slice()?.reverse()?.map((review, idx) => (
+                  <div key={idx} className="flex gap-4 border-b border-border-light pb-6 last:border-0 last:pb-0">
+                    <div className="w-12 h-12 rounded-xl bg-forest-100 flex items-center justify-center flex-shrink-0 text-lg font-bold text-primary">
+                      {review.username.charAt(0).toUpperCase()}
                     </div>
-                    <p className="text-gray-600 ml-15">{review.reviewText}</p>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <h5 className="font-bold text-text-primary text-body-md">{review.username}</h5>
+                        <div className="flex items-center gap-1 bg-yellow-50 px-2 py-0.5 rounded-md">
+                          <FaStar className="w-3 h-3 text-warning" />
+                          <span className="text-caption font-bold">{review.rating}</span>
+                        </div>
+                      </div>
+                      <p className="text-text-secondary text-body-sm leading-relaxed">{review.reviewText}</p>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
-
-            {/* AI Trip Planner - Contextual to this tour */}
-            <TourTripPlanner tour={tour} />
           </div>
 
-          {/* Booking Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
-              <Booking
-                title={title}
-                price={price}
-                avgRating={avgRating}
-                reviewsArray={reviewsArray}
-              />
+          {/* Sidebar */}
+          <div className="lg:col-span-1 border-l">
+            <div className="sticky top-24">
+              <Booking tour={tour} avgRating={avgRating} />
             </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };
