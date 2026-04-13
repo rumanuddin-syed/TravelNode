@@ -72,9 +72,18 @@ const Header = () => {
       { path: "/all-tours", label: "Tours", icon: BiMap },
       { path: "/create", label: "Create", icon: BiPlus },
     ],
+    mediator: [
+      { path: "/mediator-dashboard", label: "Dashboard", icon: BiBookmark },
+      { path: "/mediator-profile", label: "Profile", icon: BiUser },
+    ],
   };
 
-  const currentNavItems = role === "admin" ? navItems.admin : navItems.user;
+  const currentNavItems =
+    role === "admin"
+      ? navItems.admin
+      : role === "mediator"
+      ? navItems.mediator
+      : navItems.user;
 
   const isActivePath = (path) => {
     return location.pathname === path;
@@ -146,8 +155,12 @@ const Header = () => {
                     }
                     className="flex items-center gap-2.5 px-3.5 py-2 rounded-xl transition-all duration-200 group bg-white/10 hover:bg-white/20 border border-white/10"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white text-sm font-bold shadow-sm">
-                      {user.username?.charAt(0).toUpperCase()}
+                    <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white text-sm font-bold shadow-sm overflow-hidden border border-white/20">
+                      {user.photo ? (
+                        <img src={user.photo} alt={user.username} className="w-full h-full object-cover" />
+                      ) : (
+                        user.username?.charAt(0).toUpperCase()
+                      )}
                     </div>
                     <span className="text-body-sm font-bold text-white">
                       {user.username}
@@ -180,18 +193,15 @@ const Header = () => {
             {/* Mobile Right */}
             <div className="flex items-center gap-2 lg:hidden">
               {user && (
-                <Link
-                  to={
-                    role === "user"
-                      ? "/my-account"
-                      : role === "mediator"
-                      ? "/mediator-dashboard"
-                      : "#"
-                  }
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold bg-white/20 text-white border border-white/30"
-                >
-                  {user.username?.charAt(0).toUpperCase()}
-                </Link>
+                  <div
+                    className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold bg-white/20 text-white border border-white/30 overflow-hidden"
+                  >
+                    {user.photo ? (
+                      <img src={user.photo} alt={user.username} className="w-full h-full object-cover" />
+                    ) : (
+                      user.username?.charAt(0).toUpperCase()
+                    )}
+                  </div>
               )}
               <button
                 onClick={handleMenuToggle}
@@ -281,8 +291,12 @@ const Header = () => {
                   onClick={handleMenuToggle}
                   className="flex items-center gap-3 p-3 bg-white border border-border-light shadow-sm rounded-xl hover:border-forest-200 transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-gradient-forest flex items-center justify-center text-white font-bold">
-                    {user.username?.charAt(0).toUpperCase()}
+                  <div className="w-10 h-10 rounded-xl bg-gradient-forest flex items-center justify-center text-white font-bold overflow-hidden">
+                    {user.photo ? (
+                      <img src={user.photo} alt={user.username} className="w-full h-full object-cover" />
+                    ) : (
+                      user.username?.charAt(0).toUpperCase()
+                    )}
                   </div>
                   <div>
                     <p className="text-body-sm font-bold text-text-primary">

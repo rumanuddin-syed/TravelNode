@@ -2,7 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import BASE_URL from '../utils/config';
 import { toast } from 'react-toastify';
-import { FiDollarSign, FiClock, FiCalendar, FiCheckCircle } from 'react-icons/fi';
+import { FiDollarSign, FiClock, FiCalendar, FiCheckCircle, FiActivity } from 'react-icons/fi';
+import MediatorAnalytics from './MediatorAnalytics';
 
 const MediatorDashboard = () => {
     const { user, token } = useContext(AuthContext);
@@ -14,6 +15,7 @@ const MediatorDashboard = () => {
     });
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('overview');
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -24,7 +26,7 @@ const MediatorDashboard = () => {
 
     const fetchDashboardData = async () => {
         try {
-            const res = await fetch(`${BASE_URL}/mediator-profile/dashboard/${user._id}`, {
+            const res = await fetch(`${BASE_URL}/mediator-profile/stats/${user._id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -77,11 +79,31 @@ const MediatorDashboard = () => {
         <section className="bg-background min-h-[80vh] py-16">
             <div className="max-w-7xl mx-auto px-5 lg:px-8">
                 <div className="mb-10">
-                    <span className="section-overline">Overview</span>
-                    <h2 className="text-display-sm text-text-primary mt-1">Mediator Dashboard</h2>
-                    <p className="text-body-sm text-text-secondary mt-2">Manage your bookings, earnings, and sessions.</p>
+                    <span className="section-overline">Workspace</span>
+                    <h2 className="text-display-sm text-text-primary mt-1 flex items-center justify-between">
+                       Mediator Dashboard
+                    </h2>
+                    
+                    <div className="flex gap-4 mt-6 border-b border-border-light">
+                       <button 
+                         className={`pb-3 px-2 font-semibold transition-colors border-b-2 ${activeTab === 'overview' ? 'border-primary text-primary' : 'border-transparent text-text-secondary hover:text-text-primary'}`}
+                         onClick={() => setActiveTab('overview')}
+                       >
+                         Overview & Bookings
+                       </button>
+                       <button 
+                         className={`pb-3 px-2 font-semibold transition-colors border-b-2 flex items-center gap-2 ${activeTab === 'analytics' ? 'border-primary text-primary' : 'border-transparent text-text-secondary hover:text-text-primary'}`}
+                         onClick={() => setActiveTab('analytics')}
+                       >
+                         <FiActivity /> Analytics
+                       </button>
+                    </div>
                 </div>
 
+                {activeTab === 'analytics' ? (
+                   <MediatorAnalytics />
+                ) : (
+                <>
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-12">
                     <div className="card p-6 border-l-4 border-l-cta">
@@ -164,7 +186,7 @@ const MediatorDashboard = () => {
                                             <td className="px-6 py-4">
                                                 <p className="font-semibold text-text-primary mb-1">{booking.tourName}</p>
                                                 <p className="text-xs text-text-muted">
-                                                    {new Date(booking.date).toLocaleDateString()}
+                                                    {booking.startDate} - {booking.endDate}
                                                 </p>
                                             </td>
                                             <td className="px-6 py-4">
@@ -208,6 +230,8 @@ const MediatorDashboard = () => {
                         </table>
                     </div>
                 </div>
+                </>
+                )}
             </div>
         </section>
     );

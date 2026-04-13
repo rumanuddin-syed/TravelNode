@@ -29,7 +29,7 @@ const TourDetails = () => {
     window.scrollTo(0, 0);
   }, [tour]);
 
-  if (loading) {
+  if (loading && !tour) {
     return (
       <div className="flex justify-center items-center h-screen bg-background">
         <div className="flex flex-col items-center gap-4">
@@ -40,7 +40,7 @@ const TourDetails = () => {
     );
   }
 
-  if (error) {
+  if (error || (tour && Array.isArray(tour) && tour.length === 0)) {
     return (
       <div className="flex justify-center items-center h-screen bg-background pt-20 text-center">
         <div>
@@ -48,16 +48,21 @@ const TourDetails = () => {
             <span className="text-3xl">⚠️</span>
           </div>
           <h2 className="text-display-sm text-text-primary mb-2">Tour Not Found</h2>
-          <p className="text-body-lg text-text-secondary">{error}</p>
+          <p className="text-body-lg text-text-secondary">
+            {error || "The tour you are looking for might have been removed or the link is invalid."}
+          </p>
+          <div className="mt-8">
+            <a href="/tours" className="btn-cta">Back to All Tours</a>
+          </div>
         </div>
       </div>
     );
   }
 
-  if (!tour) return null;
+  if (!tour || Array.isArray(tour)) return null;
 
   const { photo, title, desc, price, address, reviews, city, distance, maxGroupSize } = tour;
-  const { totalRating, avgRating } = CalculateAvg(reviews);
+  const { totalRating, avgRating } = CalculateAvg(reviews || []);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -75,6 +80,7 @@ const TourDetails = () => {
     try {
       const reviewObj = {
         productId: id,
+        userId: user._id,
         username: user.username,
         reviewText,
         rating: tourRating,

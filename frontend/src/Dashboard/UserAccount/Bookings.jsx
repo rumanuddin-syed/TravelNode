@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import useFetch from "../../hooks/useFetch";
 import BASE_URL from "../../utils/config";
 import { AuthContext } from "../../context/AuthContext";
@@ -8,6 +8,17 @@ import { FiCalendar } from "react-icons/fi";
 const Bookings = () => {
   const { user } = useContext(AuthContext);
   const { apiData: bookings, loading, error } = useFetch(`${BASE_URL}/booking/${user._id}`);
+  const [bookingList, setBookingList] = useState([]);
+
+  useEffect(() => {
+    if (bookings) {
+      setBookingList(bookings);
+    }
+  }, [bookings]);
+
+  const handleDeleteSuccess = (bookingId) => {
+    setBookingList(prev => prev.filter(item => item._id !== bookingId));
+  };
 
   if (loading) {
     return (
@@ -25,7 +36,7 @@ const Bookings = () => {
     );
   }
 
-  if (!bookings || bookings.length === 0) {
+  if (!bookingList || bookingList.length === 0) {
     return (
       <div className="text-center py-16 bg-forest-50/50 rounded-2xl border border-dashed border-border-default">
         <div className="inline-flex items-center justify-center w-20 h-20 bg-white shadow-sm rounded-full mb-6">
@@ -57,8 +68,8 @@ const Bookings = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-border-light">
-            {bookings.map((booking) => (
-              <BookingCard key={booking._id} booking={booking} />
+            {bookingList.map((booking) => (
+              <BookingCard key={booking._id} booking={booking} displayMode="row" onDeleteSuccess={handleDeleteSuccess} />
             ))}
           </tbody>
         </table>
@@ -66,8 +77,8 @@ const Bookings = () => {
 
       {/* Mobile Card View (visible on mobile) */}
       <div className="md:hidden space-y-4">
-        {bookings.map((booking) => (
-          <BookingCard key={booking._id} booking={booking} />
+        {bookingList.map((booking) => (
+          <BookingCard key={booking._id} booking={booking} displayMode="card" onDeleteSuccess={handleDeleteSuccess} />
         ))}
       </div>
     </div>

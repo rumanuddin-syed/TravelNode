@@ -1,17 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import BASE_URL from "../../utils/config";
 import { AuthContext } from "../../context/AuthContext";
-import useFetch from "../../hooks/useFetch";
-import { FiUpload, FiUser, FiMail } from "react-icons/fi";
+import { FiUpload, FiUser, FiMail, FiLoader } from "react-icons/fi";
+import uploadImageToCloudinary from "../../utils/uploadCloudinary";
 
 const Profile = () => {
-  const navigate = useNavigate();
   const { user, token, dispatch } = useContext(AuthContext);
-  const { apiData: updatedUser, error } = useFetch(
-    `${BASE_URL}/tour/${user._id}`
-  );
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -20,11 +17,33 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    setFormData({ username: user.username, email: user.email, photo: "" });
+    if (user) {
+      setFormData({
+        username: user.username || "",
+        email: user.email || "",
+        photo: user.photo || "",
+      });
+    }
   }, [user]);
 
   const handleInput = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFileInput = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const data = await uploadImageToCloudinary(file);
+      setFormData((prev) => ({ ...prev, photo: data.url }));
+      toast.success("Image uploaded successfully");
+    } catch (err) {
+      toast.error("Failed to upload image");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const submitHandler = async (e) => {
@@ -39,21 +58,19 @@ const Profile = () => {
         },
         body: JSON.stringify(formData),
       });
-      const { message } = await response.json();
+
+      const result = await response.json();
 
       if (response.ok) {
+        const updatedUser = { ...user, ...formData };
         dispatch({
           type: "UPDATE_USER",
-          payload: {
-            user: response.data,
-            token: response.token,
-          },
+          payload: updatedUser
         });
-
-        navigate("/login");
-        toast.success(message);
+        
+        toast.success(result.message || "Profile updated successfully");
       } else {
-        toast.error(message);
+        toast.error(result.message || "Failed to update profile");
       }
     } catch (err) {
       toast.error("Server not responding");
@@ -89,10 +106,10 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* Email Field */}
+          {/* Email Field - Read Only */}
           <div>
             <label htmlFor="email" className="form-label">
-              Email Address
+              Email Address (Cannot be changed)
             </label>
             <div className="relative">
               <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
@@ -101,10 +118,9 @@ const Profile = () => {
                 id="email"
                 name="email"
                 value={formData.email}
-                onChange={handleInput}
-                required
-                className="form-input !pl-11"
-                placeholder="Enter your email"
+                readOnly
+                className="form-input !pl-11 bg-forest-50/50 cursor-not-allowed opacity-75"
+                title="Email cannot be changed"
               />
             </div>
           </div>
@@ -116,15 +132,15 @@ const Profile = () => {
             Profile Photo
           </label>
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
-            {user.photo ? (
-              <figure className="w-20 h-20 rounded-full border-4 border-white shadow-sm overflow-hidden flex-shrink-0">
-                <img src={user.photo} alt="Profile" className="w-full h-full object-cover" />
-              </figure>
-            ) : (
-              <div className="w-20 h-20 rounded-full border-4 border-white shadow-sm bg-white flex items-center justify-center text-text-muted flex-shrink-0">
-                <FiUser className="w-8 h-8" />
-              </div>
-            )}
+            <figure className="w-20 h-20 rounded-full border-4 border-white shadow-sm overflow-hidden flex-shrink-0 bg-white">
+              {formData.photo ? (
+                <img src={formData.photo} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-text-muted">
+                  <FiUser className="w-8 h-8" />
+                </div>
+              )}
+            </figure>
             <div className="relative flex-1 w-full">
               <input
                 type="file"
@@ -132,13 +148,21 @@ const Profile = () => {
                 name="photo"
                 accept=".png,.jpg,.jpeg"
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                onChange={(e) => {
-                  // Handle file upload logic if needed (currently not used)
-                }}
+                onChange={handleFileInput}
+                disabled={uploading}
               />
-              <div className="flex items-center justify-center w-full px-4 py-6 border-2 border-dashed border-border-default rounded-xl bg-white hover:bg-forest-50 hover:border-accent transition-all duration-300 cursor-pointer group">
-                <FiUpload className="w-5 h-5 text-accent mr-3 group-hover:scale-110 transition-transform" />
-                <span className="text-body-sm font-semibold text-text-secondary group-hover:text-primary transition-colors">Click to upload new photo</span>
+              <div className={`flex items-center justify-center w-full px-4 py-6 border-2 border-dashed border-border-default rounded-xl bg-white transition-all duration-300 cursor-pointer group ${uploading ? 'opacity-50' : 'hover:bg-forest-50 hover:border-accent'}`}>
+                {uploading ? (
+                  <>
+                    <FiLoader className="w-5 h-5 text-accent mr-3 animate-spin" />
+                    <span className="text-body-sm font-semibold text-text-secondary">Uploading image...</span>
+                  </>
+                ) : (
+                  <>
+                    <FiUpload className="w-5 h-5 text-accent mr-3 group-hover:scale-110 transition-transform" />
+                    <span className="text-body-sm font-semibold text-text-secondary group-hover:text-primary transition-colors">Click to upload new photo</span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -150,6 +174,7 @@ const Profile = () => {
           <button
             type="submit"
             className="btn-cta-lg w-full sm:w-auto min-w-[200px]"
+            disabled={uploading}
           >
             Save Changes
           </button>

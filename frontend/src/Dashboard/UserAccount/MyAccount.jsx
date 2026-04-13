@@ -14,7 +14,8 @@ const MyAccount = () => {
   const { user, dispatch, token } = useContext(AuthContext);
   const [tab, setTab] = useState("bookings");
   const navigate = useNavigate();
-  const { apiData: bookings, loading, error } = useFetch(`${BASE_URL}/booking/${user._id}`);
+  const { apiData: bookings, loading: loadingBookings } = useFetch(user?._id ? `${BASE_URL}/booking/${user._id}` : null);
+  const { apiData: reviews, loading: loadingReviews } = useFetch(user?._id ? `${BASE_URL}/review?userId=${user._id}` : null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -65,14 +66,14 @@ const MyAccount = () => {
             <div className="card overflow-hidden sticky top-32">
               {/* Header with gradient */}
               <div className="h-32 bg-gradient-forest"></div>
-              
+
               {/* Avatar - centered overlapping */}
               <div className="flex justify-center -mt-16">
                 <div className="relative">
                   <div className="absolute inset-0 bg-primary/20 rounded-full blur-md transform translate-y-2"></div>
                   <figure className="relative w-32 h-32 rounded-full border-4 border-white overflow-hidden bg-forest-50 shadow-sm">
                     <img
-                      src={avatar}
+                      src={user?.photo || avatar}
                       alt={user?.username}
                       className="w-full h-full object-cover"
                     />
@@ -87,14 +88,18 @@ const MyAccount = () => {
                   <FiMail className="text-accent" /> {user?.email}
                 </p>
 
-                {/* Stats Placeholder */}
-                <div className="flex justify-center gap-8 mt-6 pt-6 border-t border-border-light">
-                  <div>
-                    <span className="block text-display-sm font-bold text-primary">{bookings ? bookings.length : 0}</span>
+                {/* Stats Bar */}
+                <div className="flex justify-center gap-8 mt-6 pt-6 border-t border-border-light text-center">
+                  <div className="flex flex-col items-center">
+                    <span className="block text-display-sm font-bold text-primary min-w-[40px]">
+                      {loadingBookings ? "..." : (bookings ? bookings.length : 0)}
+                    </span>
                     <span className="text-caption font-bold text-text-muted uppercase tracking-wider">Bookings</span>
                   </div>
-                  <div>
-                    <span className="block text-display-sm font-bold text-primary">0</span>
+                  <div className="flex flex-col items-center">
+                    <span className="block text-display-sm font-bold text-primary min-w-[40px]">
+                      {loadingReviews ? "..." : (reviews ? reviews.length : 0)}
+                    </span>
                     <span className="text-caption font-bold text-text-muted uppercase tracking-wider">Reviews</span>
                   </div>
                 </div>
@@ -132,11 +137,10 @@ const MyAccount = () => {
             <div className="bg-white rounded-2xl shadow-sm border border-border-light p-1.5 inline-flex mb-6 max-w-full overflow-x-auto hide-scrollbar">
               <button
                 onClick={() => setTab("bookings")}
-                className={`px-6 py-3 rounded-xl text-body-sm font-bold transition-all duration-300 whitespace-nowrap ${
-                  tab === "bookings"
+                className={`px-6 py-3 rounded-xl text-body-sm font-bold transition-all duration-300 whitespace-nowrap ${tab === "bookings"
                     ? "bg-primary text-white shadow-md"
                     : "text-text-secondary hover:text-primary hover:bg-forest-50"
-                }`}
+                  }`}
               >
                 <span className="flex items-center space-x-2">
                   <FiCalendar className="w-4 h-4" />
@@ -145,11 +149,10 @@ const MyAccount = () => {
               </button>
               <button
                 onClick={() => setTab("settings")}
-                className={`px-6 py-3 rounded-xl text-body-sm font-bold transition-all duration-300 whitespace-nowrap ${
-                  tab === "settings"
+                className={`px-6 py-3 rounded-xl text-body-sm font-bold transition-all duration-300 whitespace-nowrap ${tab === "settings"
                     ? "bg-primary text-white shadow-md"
                     : "text-text-secondary hover:text-primary hover:bg-forest-50"
-                }`}
+                  }`}
               >
                 <span className="flex items-center space-x-2">
                   <FiSettings className="w-4 h-4" />

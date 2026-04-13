@@ -10,7 +10,7 @@ const Booking = ({ tour, avgRating }) => {
   const { price, title, maxGroupSize, reviews: reviewsArray } = tour;
   const currentDate = new Date().toISOString().split("T")[0];
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   
   const [mediators, setMediators] = useState([]);
   const [loadingMediators, setLoadingMediators] = useState(false);
@@ -18,11 +18,11 @@ const Booking = ({ tour, avgRating }) => {
     userId: user?._id || "",
     tourName: title,
     fullName: "",
-    totalPrice: price,
     phone: "",
-    maxGroupSize: 1,
+    guestSize: 1,
     bookAt: currentDate,
-    date: "",
+    startDate: "",
+    endDate: "",
     mediatorId: "",
     costPerHour: 0,
     hours: undefined,
@@ -32,9 +32,8 @@ const Booking = ({ tour, avgRating }) => {
     setData((prev) => ({
       ...prev,
       tourName: title,
-      totalPrice: prev.maxGroupSize * price,
     }));
-  }, [title, price]);
+  }, [title]);
 
   useEffect(() => {
     fetchMediators();
@@ -76,6 +75,27 @@ const Booking = ({ tour, avgRating }) => {
     }));
   };
 
+  // Calculate number of days
+  const getDays = () => {
+    if (!data.startDate || !data.endDate) return 1;
+    const start = new Date(data.startDate);
+    const end = new Date(data.endDate);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // Inclusive
+    return diffDays > 0 ? diffDays : 1;
+  };
+
+  const days = getDays();
+  const baseTotal = data.guestSize * price * days;
+  const mediatorTotal = data.mediatorId ? (data.hours || 0) * data.costPerHour : 0;
+  const grandTotal = baseTotal + mediatorTotal;
+
+  useEffect(() => {
+    if (user?._id) {
+      setData((prev) => ({ ...prev, userId: user._id }));
+    }
+  }, [user]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -84,24 +104,26 @@ const Booking = ({ tour, avgRating }) => {
       return;
     }
 
-    const mediatorCost = data.mediatorId ? (data.hours || 0) * data.costPerHour : 0;
-    const finalTotal = data.maxGroupSize * price + mediatorCost;
-
     const bookingData = {
       ...data,
-      totalPrice: finalTotal,
+      userId: user._id, // Guarantee latest user ID
+      maxGroupSize: data.guestSize, // Map guestSize to backend maxGroupSize field
+      totalPrice: grandTotal,
     };
 
     try {
       const response = await fetch(`${BASE_URL}/booking`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify(bookingData),
       });
       const result = await response.json();
       if (response.ok) {
-        toast.success("Booking confirmed!");
-        navigate("/booked");
+        toast.success("Booking created! Please complete payment.");
+        navigate(`/payment-instructions/${result.newBooking._id}`);
       } else {
         toast.error(result.message);
       }
@@ -109,10 +131,6 @@ const Booking = ({ tour, avgRating }) => {
       toast.error("Server not responding");
     }
   };
-
-  const baseTotal = data.maxGroupSize * price;
-  const mediatorTotal = data.mediatorId ? (data.hours || 0) * data.costPerHour : 0;
-  const grandTotal = baseTotal + mediatorTotal;
 
   return (
     <div className="card p-6 md:p-8 bg-white border-none shadow-elevated">
@@ -166,28 +184,43 @@ const Booking = ({ tour, avgRating }) => {
             <FiCalendar className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
             <input
               type="date"
-              id="date"
-              value={data.date}
+              id="startDate"
+              value={data.startDate}
               onChange={handleChange}
               min={currentDate}
               required
               className="form-input !pl-11 !pr-3 text-sm"
             />
+            <span className="absolute -top-2 left-3 bg-white px-1 text-[10px] text-text-muted">Start</span>
           </div>
           <div className="relative">
-            <FiUsers className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+            <FiCalendar className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
             <input
-              type="number"
-              id="maxGroupSize"
-              placeholder="Guests"
-              value={data.maxGroupSize}
+              type="date"
+              id="endDate"
+              value={data.endDate}
               onChange={handleChange}
-              min="1"
-              max={maxGroupSize}
+              min={data.startDate || currentDate}
               required
-              className="form-input !pl-11"
+              className="form-input !pl-11 !pr-3 text-sm"
             />
+            <span className="absolute -top-2 left-3 bg-white px-1 text-[10px] text-text-muted">End</span>
           </div>
+        </div>
+
+        <div className="relative">
+          <FiUsers className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+          <input
+            type="number"
+            id="guestSize"
+            placeholder="Guests"
+            value={data.guestSize}
+            onChange={handleChange}
+            min="1"
+            max={maxGroupSize}
+            required
+            className="form-input !pl-11"
+          />
         </div>
 
         {/* Mediator Selection */}
@@ -205,7 +238,7 @@ const Booking = ({ tour, avgRating }) => {
               <option value="">Select a mediator (Optional)</option>
               {mediators.map((mediator) => (
                 <option key={mediator._id} value={mediator._id}>
-                  {mediator.userId} (₹{mediator.costPerHour}/hr)
+                  {mediator.userId?.username || "Mediator"} (₹{mediator.costPerHour}/hr)
                 </option>
               ))}
             </select>
@@ -242,7 +275,7 @@ const Booking = ({ tour, avgRating }) => {
         <div className="bg-forest-50 rounded-2xl p-5 mt-6 border border-border-light">
           <div className="space-y-3 mb-4 text-body-sm border-b border-border-default pb-4">
             <div className="flex justify-between">
-              <span className="text-text-secondary">₹{price} × {data.maxGroupSize} travelers</span>
+              <span className="text-text-secondary">₹{price} × {data.guestSize} pers. × {days} days</span>
               <span className="font-bold text-primary">₹{baseTotal}</span>
             </div>
             {data.mediatorId && (

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BiBookmark, BiUser, BiMap, BiMoney } from "react-icons/bi";
-import { FiMap, FiUsers, FiDollarSign, FiPlusCircle, FiList, FiStar } from "react-icons/fi";
+import { FiMap, FiUsers, FiDollarSign, FiPlusCircle, FiList, FiStar, FiMessageSquare } from "react-icons/fi";
 
 const AdminDashboard = () => {
   useEffect(() => {
@@ -45,11 +45,32 @@ const AdminDashboard = () => {
       gradient: "from-rose-400 to-red-500",
     },
     {
+      title: "Manage Payments",
+      description: "Verify manual payment screenshots and confirm bookings",
+      icon: FiDollarSign,
+      path: "/admin-payments",
+      gradient: "from-emerald-500 to-teal-400",
+    },
+    {
       title: "Reviews Management",
       description: "Manage and highlight traveler reviews",
       icon: FiStar,
       path: "/admin-reviews",
       gradient: "from-purple-500 to-pink-500",
+    },
+    {
+      title: "Platform Analytics",
+      description: "View revenue, insights, and performance numbers",
+      icon: FiDollarSign,
+      path: "/admin-analytics",
+      gradient: "from-slate-600 to-slate-800",
+    },
+    {
+      title: "Support Desk",
+      description: "Manage real-time customer support conversations",
+      icon: FiMessageSquare,
+      path: "/admin-support",
+      gradient: "from-emerald-400 to-cyan-500",
     },
   ];
 
