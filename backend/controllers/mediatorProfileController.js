@@ -96,42 +96,70 @@ const updateMediatorProfile = async (req, res) => {
 const getMediatorStats = async (req, res) => {
   try {
     const userId = req.params.id;
-    let mediatorProfile = await Mediator.findOne({ userId });
-
-    // If profile doesn't exist, create a default one
-    if (!mediatorProfile) {
-      mediatorProfile = new Mediator({
-        userId,
-      });
-      await mediatorProfile.save();
+    // Deep fix: Find ALL mediator profiles associated with this user ID
+    // (This handles duplicate profiles created during account setup)
+    const mediatorProfiles = await Mediator.find({ userId });
+    if (mediatorProfiles.length === 0) {
+      // Create a default if none exist
+      const newProfile = new Mediator({ userId });
+      await newProfile.save();
+      mediatorProfiles.push(newProfile);
     }
+    
+    // Pick the primary profile for generic info (rating, cost, etc.)
+    const mediatorProfile = mediatorProfiles[0];
+    const mediatorIds = mediatorProfiles.map(m => m._id.toString());
 
-    // Get booking details
-    const bookings = await Booking.find({ mediatorId: userId });
-    const completedBookings = bookings.filter((b) => b.completed);
+    // Get ALL bookings for the mediator using a robust search across ALL associated profiles
+    const allBookings = await Booking.find({});
+    
+    const bookings = allBookings.filter(b => {
+      const bMedId = b.mediatorId ? b.mediatorId.toString() : null;
+      // Greedy match: Check if the booking belongs to ANY profile found for this user
+      return (bMedId && mediatorIds.includes(bMedId)) || (bMedId && bMedId === userId);
+    });
+
+    const confirmedBookings = bookings.filter((b) => b.status === "confirmed");
+    const pendingBookings = bookings.filter((b) => b.status === "pending");
+    const completedSessions = bookings.filter((b) => b.completed).length;
 
     // Calculate total earnings from bookings
-    const totalEarnings = bookings.reduce((sum, booking) => {
+    const totalEarnings = confirmedBookings.reduce((sum, booking) => {
       return sum + (booking.costPerHour * booking.hours || 0);
     }, 0);
 
+    const totalHours = confirmedBookings.reduce((sum, booking) => {
+      return sum + (booking.hours || 0);
+    }, 0);
+
     const stats = {
-      costPerHour: mediatorProfile.costPerHour || 0,
-      totalBookings: bookings.length,
-      completedBookings: completedBookings.length,
       totalEarnings: totalEarnings,
+      pendingBookings: pendingBookings.length,
+      completedSessions: completedSessions,
+      totalHours: totalHours,
+      // Include profile info for completeness
+      costPerHour: mediatorProfile.costPerHour || 0,
       rating: mediatorProfile.rating || 0,
       isAvailable: mediatorProfile.isAvailable !== undefined ? mediatorProfile.isAvailable : true,
-      bio: mediatorProfile.bio || '',
-      languages: mediatorProfile.languages || [],
-      phone: mediatorProfile.phone || '',
-      profilePhoto: mediatorProfile.profilePhoto || '',
-      experience: mediatorProfile.experience || '',
-      certifications: mediatorProfile.certifications || [],
-      reviews: mediatorProfile.reviews || [],
     };
 
-    res.status(200).json({ success: true, data: stats });
+    // Sort recent bookings by date and calculate earnings for each
+    const recentBookings = [...bookings]
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, 10)
+      .map(booking => {
+        const bObj = booking.toObject();
+        bObj.mediatorEarnings = (booking.costPerHour || 0) * (booking.hours || 0);
+        return bObj;
+      });
+
+    res.status(200).json({ 
+      success: true, 
+      data: {
+        stats,
+        recentBookings
+      } 
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -176,7 +204,7 @@ const addReview = async (req, res) => {
 // Get all mediators for browsing
 const getAllMediators = async (req, res) => {
   try {
-    const mediators = await Mediator.find({ isAvailable: true });
+    const mediators = await Mediator.find({ isAvailable: true }).populate('userId', 'username');
     res.status(200).json({ success: true, data: mediators });
   } catch (error) {
     console.error(error);
@@ -185,11 +213,16 @@ const getAllMediators = async (req, res) => {
 };
 
 // Update mediator earnings when booking is created
-const updateMediatorEarnings = async (mediatorUserId, costPerHour, hours) => {
+const updateMediatorEarnings = async (mediatorId, costPerHour, hours) => {
   try {
-    if (!mediatorUserId) return;
+    if (!mediatorId) return;
 
-    const mediatorProfile = await Mediator.findOne({ userId: mediatorUserId });
+    // Try finding by Mediator _id first (modern approach), then fallback to userId
+    let mediatorProfile = await Mediator.findById(mediatorId);
+    if (!mediatorProfile) {
+      mediatorProfile = await Mediator.findOne({ userId: mediatorId });
+    }
+    
     if (!mediatorProfile) return;
 
     const bookingCost = costPerHour * hours;
@@ -202,6 +235,37 @@ const updateMediatorEarnings = async (mediatorUserId, costPerHour, hours) => {
   }
 };
 
+// Update booking status by mediator
+const updateBookingStatus = async (req, res) => {
+  try {
+    const bookingId = req.params.id;
+    const { status } = req.body;
+
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    if (status === 'completed') {
+      booking.completed = true;
+      booking.status = 'completed';
+    } else if (status === 'confirmed' || status === 'pending' || status === 'cancelled') {
+        booking.status = status;
+    }
+
+    await booking.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Booking status updated successfully",
+      data: booking
+    });
+  } catch (error) {
+    console.error('Error updating booking status:', error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 export {
   getMediatorProfile,
   createMediatorProfile,
@@ -210,4 +274,5 @@ export {
   addReview,
   getAllMediators,
   updateMediatorEarnings,
+  updateBookingStatus,
 };

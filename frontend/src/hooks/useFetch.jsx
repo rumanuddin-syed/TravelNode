@@ -10,7 +10,13 @@ const useFetch = (url) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(url);
+        const token = localStorage.getItem('token');
+        const response = await fetch(url, {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : ""
+          },
+          credentials: 'include'
+        });
         
         if (!response.ok) {
           if (response.status === 404) {
@@ -50,8 +56,14 @@ const useFetch = (url) => {
   // Refetch function for manual data refresh
   const refetch = async () => {
     setLoading(true);
+    const token = localStorage.getItem('token');
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : ""
+        },
+        credentials: 'include'
+      });
       if (!response.ok) {
         throw new Error('Failed to refetch');
       }

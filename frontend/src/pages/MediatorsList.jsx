@@ -88,7 +88,9 @@ const MediatorsList = () => {
             {filteredMediators.map((mediator) => (
               <div key={mediator._id} className="card overflow-hidden card-hover group">
                 <div className={`px-5 py-3 border-b border-border-light flex justify-between items-center ${mediator.isAvailable ? 'bg-forest-50/50' : 'bg-gray-50'}`}>
-                  <h3 className="font-bold text-text-primary">Mediator</h3>
+                  <h3 className="font-bold text-text-primary">
+                    {mediator.userId?.username || "Mediator"}
+                  </h3>
                   <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
                     mediator.isAvailable ? 'bg-forest-100 text-forest-800' : 'bg-gray-200 text-gray-700'
                   }`}>

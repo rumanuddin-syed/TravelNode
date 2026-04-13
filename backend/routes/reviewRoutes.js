@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', getAllReviews);
 
 // Create a new review
-router.post('/:tourId', verifyToken, verifyUser, createReview);
+router.post('/:tourId', verifyToken, createReview);
 
 // Toggle Star review
 router.patch('/:id/star', verifyToken, verifyAdmin, toggleStarReview);

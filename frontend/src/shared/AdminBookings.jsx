@@ -4,9 +4,9 @@ import { toast } from "react-toastify";
 import { FiCheck } from "react-icons/fi";
 
 const AdminBookingCard = ({ booking }) => {
-  const { tourName, fullName, userId, phone, totalPrice, maxGroupSize, date, createdAt, _id } = booking;
+  const { tourName, fullName, userId, phone, totalPrice, maxGroupSize, startDate, endDate, createdAt, _id, status, paymentStatus } = booking;
 
-  const bookedFor = new Date(date).toDateString();
+  const bookedFor = `${startDate} - ${endDate}`;
   const bookedOn = new Date(createdAt).toDateString();
 
   const confirmDelete = async () => {
@@ -44,13 +44,24 @@ const AdminBookingCard = ({ booking }) => {
       <td className="text-caption">{bookedOn}</td>
       <td className="font-semibold text-primary">₹{totalPrice}</td>
       <td>
-        <button
-          onClick={confirmDelete}
-          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-accent text-white text-caption font-medium rounded-lg hover:bg-forest-700 transition-all"
-        >
-          <FiCheck className="w-3.5 h-3.5" />
-          Complete
-        </button>
+        <div className="flex flex-col gap-1.5">
+          <span className={`badge !text-[10px] ${
+            paymentStatus === "paid" ? "bg-success/10 text-success" :
+            paymentStatus === "failed" ? "bg-danger/10 text-danger" :
+            paymentStatus === "pending_verification" ? "bg-sky-100 text-sky-800" :
+            "bg-gray-100 text-gray-600"
+          }`}>
+            {paymentStatus?.replace("_", " ") || "UNPAID"}
+          </span>
+          {paymentStatus !== "paid" && (
+             <button
+              onClick={confirmDelete}
+              className="inline-flex items-center justify-center gap-1.5 px-2 py-1 bg-accent text-white text-[10px] font-bold rounded hover:bg-forest-700 transition-all"
+            >
+              Complete
+            </button>
+          )}
+        </div>
       </td>
     </tr>
   );

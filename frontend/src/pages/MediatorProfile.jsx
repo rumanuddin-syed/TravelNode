@@ -3,13 +3,15 @@ import { AuthContext } from '../context/AuthContext';
 import BASE_URL from '../utils/config';
 import { BiSave } from 'react-icons/bi';
 import { toast } from 'react-toastify';
-import { FiDollarSign, FiMessageCircle, FiPhone, FiInfo, FiEdit2, FiX } from 'react-icons/fi';
+import { FiDollarSign, FiMessageCircle, FiPhone, FiInfo, FiEdit2, FiX, FiImage, FiUser, FiUpload, FiLoader } from 'react-icons/fi';
+import uploadImageToCloudinary from '../utils/uploadCloudinary';
 
 const MediatorProfile = () => {
-  const { user } = useContext(AuthContext);
+  const { user, dispatch } = useContext(AuthContext);
   const [profile, setProfile] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     bio: '',
     costPerHour: 0,
@@ -18,6 +20,7 @@ const MediatorProfile = () => {
     experience: '',
     certifications: [],
     isAvailable: true,
+    photo: '',
   });
 
   useEffect(() => {
@@ -47,6 +50,7 @@ const MediatorProfile = () => {
           experience: result.data.experience || '',
           certifications: result.data.certifications || [],
           isAvailable: result.data.isAvailable !== undefined ? result.data.isAvailable : true,
+          photo: user.photo || '',
         });
       } else {
         setProfile({
@@ -61,6 +65,7 @@ const MediatorProfile = () => {
           rating: 0,
           totalBookings: 0,
         });
+        setFormData(prev => ({ ...prev, photo: user.photo || '' }));
       }
     } catch (error) {
       console.error('Error loading profile:', error);
@@ -76,6 +81,22 @@ const MediatorProfile = () => {
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     });
+  };
+
+  const handleFileInput = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const data = await uploadImageToCloudinary(file);
+      setFormData((prev) => ({ ...prev, photo: data.url }));
+      toast.success("Photo uploaded successfully!");
+    } catch (err) {
+      toast.error("Failed to upload image");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleLanguageAdd = () => {
@@ -97,6 +118,7 @@ const MediatorProfile = () => {
 
   const handleSaveProfile = async () => {
     try {
+      // 1. Update mediator-specific profile
       const res = await fetch(`${BASE_URL}/mediator-profile/profile/${user._id}`, {
         method: 'PUT',
         headers: {
@@ -105,6 +127,26 @@ const MediatorProfile = () => {
         },
         body: JSON.stringify(formData),
       });
+      
+      // 2. Clear out user-specific data from being sent to mediator endpoint
+      // and update the main User model if the photo changed
+      if (formData.photo !== user.photo) {
+        await fetch(`${BASE_URL}/user/users/${user._id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: JSON.stringify({ photo: formData.photo }),
+        });
+        
+        // Sync context
+        dispatch({
+          type: "UPDATE_USER",
+          payload: { ...user, photo: formData.photo }
+        });
+      }
+
       const result = await res.json();
       if (result.success) {
         setProfile(result.data);
@@ -133,7 +175,18 @@ const MediatorProfile = () => {
           <div>
             <span className="section-overline">Settings</span>
             <h2 className="text-display-sm text-text-primary mt-1">Mediator Profile</h2>
-            <p className="text-body-sm text-text-secondary mt-1">{user?.username}</p>
+            <div className="flex items-center gap-3 mt-2">
+               <div className="w-10 h-10 rounded-lg overflow-hidden border-2 border-accent shadow-sm">
+                  {formData.photo ? (
+                    <img src={formData.photo} alt={user?.username} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-forest-100 flex items-center justify-center text-primary font-bold">
+                      {user?.username?.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+               </div>
+               <p className="text-body-sm text-text-secondary font-bold">{user?.username}</p>
+            </div>
           </div>
           {!isEditing && (
             <button
@@ -200,6 +253,49 @@ const MediatorProfile = () => {
                   </button>
                 </div>
 
+                {/* Photo Upload */}
+                <div className="bg-forest-50 p-6 md:p-8 rounded-2xl border border-border-light">
+                  <label className="flex items-center gap-2 text-body-lg font-bold text-primary mb-4">
+                    <FiImage className="text-accent" /> Profile Photo
+                  </label>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                    <figure className="w-20 h-20 rounded-full border-4 border-white shadow-sm overflow-hidden flex-shrink-0 bg-white">
+                      {formData.photo ? (
+                        <img src={formData.photo} alt="Profile" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-text-muted">
+                          <FiUser className="w-8 h-8" />
+                        </div>
+                      )}
+                    </figure>
+                    <div className="relative flex-1 w-full">
+                      <input
+                        type="file"
+                        id="photo"
+                        name="photo"
+                        accept=".png,.jpg,.jpeg"
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        onChange={handleFileInput}
+                        disabled={uploading}
+                      />
+                      <div className={`flex items-center justify-center w-full px-4 py-6 border-2 border-dashed border-border-default rounded-xl bg-white transition-all duration-300 cursor-pointer group ${uploading ? 'opacity-50' : 'hover:bg-forest-50 hover:border-accent'}`}>
+                        {uploading ? (
+                          <>
+                            <FiLoader className="w-5 h-5 text-accent mr-3 animate-spin" />
+                            <span className="text-body-sm font-semibold text-text-secondary">Uploading image...</span>
+                          </>
+                        ) : (
+                          <>
+                            <FiUpload className="w-5 h-5 text-accent mr-3 group-hover:scale-110 transition-transform" />
+                            <span className="text-body-sm font-semibold text-text-secondary group-hover:text-primary transition-colors">Click to upload new photo</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-caption text-text-muted mt-3 ml-2">PNG, JPG up to 5MB</p>
+                </div>
+
                 {/* Info Fields */}
                 <div className="space-y-5">
                   <div>
@@ -240,13 +336,13 @@ const MediatorProfile = () => {
                       placeholder="E.g., 5 years guiding in Paris..."
                     />
                   </div>
-                  
+
                   <div className="flex items-center gap-3 pt-2">
-                    <input 
-                      type="checkbox" 
-                      id="isAvailable" 
+                    <input
+                      type="checkbox"
+                      id="isAvailable"
                       name="isAvailable"
-                      checked={formData.isAvailable} 
+                      checked={formData.isAvailable}
                       onChange={handleInputChange}
                       className="w-5 h-5 rounded border-gray-300 text-accent focus:ring-accent"
                     />
@@ -282,7 +378,7 @@ const MediatorProfile = () => {
                     <h2 className="text-display-md font-bold mb-1">₹{profile?.costPerHour || 0}</h2>
                     <p className="text-sky-50 text-caption opacity-90">Per hour for mediation services</p>
                   </div>
-                  
+
                   <div className="bg-gradient-forest rounded-2xl p-6 text-white shadow-elevated relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3" />
                     <p className="text-forest-100 text-body-sm font-semibold mb-2 flex items-center gap-1.5 opacity-90"><FiMessageCircle /> Languages</p>
@@ -320,9 +416,8 @@ const MediatorProfile = () => {
 
                     <div>
                       <h3 className="text-caption font-bold text-text-muted uppercase tracking-wider mb-2">Availability</h3>
-                      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold ${
-                        profile?.isAvailable ? 'bg-forest-100 text-forest-800' : 'bg-red-50 text-danger'
-                      }`}>
+                      <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold ${profile?.isAvailable ? 'bg-forest-100 text-forest-800' : 'bg-red-50 text-danger'
+                        }`}>
                         <span className={`w-2 h-2 rounded-full ${profile?.isAvailable ? 'bg-success' : 'bg-danger'}`} />
                         {profile?.isAvailable ? 'Accepting Bookings' : 'Unavailable'}
                       </div>

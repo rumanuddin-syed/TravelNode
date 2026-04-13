@@ -6,6 +6,7 @@ import {
   getMediatorStats,
   addReview,
   getAllMediators,
+  updateBookingStatus,
 } from '../controllers/mediatorProfileController.js';
 
 import { verifyToken, verifyUser } from '../middleware/authMiddleware.js';
@@ -29,5 +30,8 @@ router.get('/stats/:id', verifyToken, getMediatorStats);
 
 // Add review to mediator
 router.post('/review/:id', verifyToken, addReview);
+
+// Update booking status by mediator
+router.put('/booking/:id/status', verifyToken, updateBookingStatus);
 
 export default router;

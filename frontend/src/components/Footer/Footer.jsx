@@ -18,14 +18,22 @@ const Footer = () => {
   const { role } = useContext(AuthContext);
   const currentYear = new Date().getFullYear();
 
-  const quickLinks = [
-    { name: "Home", path: "/home" },
-    { name: "Tours", path: "/tours" },
-    { name: "Gallery", path: "/about" },
-    { name: "Contact", path: "/contact" },
-    { name: "My Trips", path: "/my-trips" },
-    { name: "Mediators", path: "/mediators" },
-  ];
+  const navLinks = {
+    user: [
+      { name: "Home", path: "/home" },
+      { name: "Tours", path: "/tours" },
+      { name: "Gallery", path: "/about" },
+      { name: "Contact", path: "/contact" },
+      { name: "My Trips", path: "/my-trips" },
+      { name: "Mediators", path: "/mediators" },
+    ],
+    mediator: [
+      { name: "Dashboard", path: "/mediator-dashboard" },
+      { name: "Profile", path: "/mediator-profile" },
+    ],
+  };
+
+  const quickLinks = role === "mediator" ? navLinks.mediator : navLinks.user;
 
   const socialLinks = [
     { icon: FaFacebookF, name: "Facebook", href: "#" },

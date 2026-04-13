@@ -3,7 +3,7 @@ import Tour from '../models/Tour.js'
 
 const createReview = async (req, res) => {
   try {
-    const { username, rating, reviewText } = req.body;
+    const { userId, username, rating, reviewText } = req.body;
     const tourId = req.params.tourId;
 
     // Validate required fields
@@ -21,6 +21,7 @@ const createReview = async (req, res) => {
     // Create a new review (fix schema mapping to productId)
     const newReview = new Review({ 
       productId: tourId, 
+      userId,
       reviewText, 
       rating, 
       username 
@@ -43,9 +44,14 @@ const createReview = async (req, res) => {
 const getAllReviews = async (req, res) => {
   try {
     const isStarred = req.query.starred === 'true';
+    const username = req.query.username;
+    const userId = req.query.userId;
     
     // Build query
-    const query = isStarred ? { isStarred: true } : {};
+    const query = {};
+    if (isStarred) query.isStarred = true;
+    if (username) query.username = username;
+    if (userId) query.userId = userId;
     
     const reviews = await Review.find(query)
       .populate('productId', 'title city')
