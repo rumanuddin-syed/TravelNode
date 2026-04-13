@@ -9,7 +9,8 @@ const createBooking = async (req, res) => {
       userId,
       fullName,
       phone,
-      date,
+      startDate,
+      endDate,
       totalPrice,
       tourName,
       maxGroupSize,
@@ -23,7 +24,8 @@ const createBooking = async (req, res) => {
       !userId ||
       !fullName ||
       !phone ||
-      !date ||
+      !startDate ||
+      !endDate ||
       !totalPrice ||
       !maxGroupSize ||
       !tourName
@@ -38,7 +40,8 @@ const createBooking = async (req, res) => {
       userId,
       fullName,
       phone,
-      date,
+      startDate,
+      endDate,
       totalPrice,
       tourName,
       maxGroupSize,
@@ -64,12 +67,16 @@ const createBooking = async (req, res) => {
   }
 };
 
-// Get a specific booking by ID
+// Get a specific booking by ID (single object)
 const getBooking = async (req, res) => {
   try {
     const bookingId = req.params.id;
-    const booking = await Booking.find({ userId: bookingId }).sort({
-      timestamps: 1,
+    const booking = await Booking.findById(bookingId).populate({
+      path: "mediatorId",
+      populate: {
+        path: "userId",
+        select: "username",
+      },
     });
 
     if (!booking) {
@@ -83,12 +90,41 @@ const getBooking = async (req, res) => {
   }
 };
 
+// Get all bookings for a user (array)
+const getUserBookings = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const bookings = await Booking.find({ userId })
+      .populate({
+        path: "mediatorId",
+        populate: {
+          path: "userId",
+          select: "username",
+        },
+      })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, data: bookings });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 // Get all bookings
 const getAllBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find().sort({
-      updatedAt: -1,
-    });
+    const bookings = await Booking.find()
+      .populate({
+        path: "mediatorId",
+        populate: {
+          path: "userId",
+          select: "username",
+        },
+      })
+      .sort({
+        updatedAt: -1,
+      });
     res
       .status(200)
       .json({ success: true, data: bookings, count: bookings.length });
@@ -117,4 +153,4 @@ const deleteBooking = async (req, res) => {
   }
 };
 
-export { createBooking, getBooking, getAllBookings, deleteBooking };
+export { createBooking, getBooking, getUserBookings, getAllBookings, deleteBooking };

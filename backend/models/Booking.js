@@ -28,12 +28,17 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    date: {
+    startDate: {
+      type: String,
+      required: true,
+    },
+    endDate: {
       type: String,
       required: true,
     },
     mediatorId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Mediator",
     },
     costPerHour: {
       type: Number,
@@ -42,6 +47,16 @@ const bookingSchema = new mongoose.Schema(
     hours: {
       type: Number,
       default: 0,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "confirmed", "cancelled", "completed"],
+      default: "pending",
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["unpaid", "pending_verification", "paid", "failed"],
+      default: "unpaid",
     },
     completed: {
       type: Boolean,

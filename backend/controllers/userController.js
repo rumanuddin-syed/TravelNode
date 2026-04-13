@@ -31,7 +31,7 @@ const updateUser = async (req, res) => {
     const userId = req.params.id;
     const { username, email, role, photo } = req.body;
 
-    const newUser = await User.findByIdAndUpdate(userId, { username, email, role, photo });
+    const newUser = await User.findByIdAndUpdate(userId, { username, email, role, photo }, { new: true });
 
     if (!newUser) {
       return res.status(404).json({ message: 'User not found' });
