@@ -11,6 +11,7 @@ import mediatorRoutes from "./routes/mediatorRoutes.js";
 import mediatorProfileRoutes from "./routes/mediatorProfileRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import supportRoutes from "./routes/supportRoutes.js";
+import subscriberRoutes from "./routes/subscriberRoutes.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import tripPlannerRoutes from './routes/tripPlannerRoutes.js';
@@ -65,6 +66,7 @@ app.use('/api/planner', tripPlannerRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/support", supportRoutes);
+app.use("/api/subscribe", subscriberRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Trips & Travels API!");

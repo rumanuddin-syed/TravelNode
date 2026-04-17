@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {Routes, Route, Navigate} from 'react-router-dom'
+import { AuthContext } from '../context/AuthContext'
 import Home from '../pages/Home'
 import Login from '../pages/Login'
 import Register from '../pages/Register'
@@ -32,11 +33,33 @@ import NotFound from '../pages/NotFound'
 
 import ProtectedRoute from './ProtectedRoute'
 
+const RootRedirect = () => {
+  const { user, role } = useContext(AuthContext);
+
+  if (user && role === 'admin') {
+    return <Navigate to="/admin-dashboard" replace />;
+  } else if (user && role === 'mediator') {
+    return <Navigate to="/mediator-dashboard" replace />;
+  }
+  return <Navigate to="/home" replace />;
+};
+
+const RoleBasedHome = () => {
+  const { user, role } = useContext(AuthContext);
+
+  if (user && role === 'admin') {
+    return <Navigate to="/admin-dashboard" replace />;
+  } else if (user && role === 'mediator') {
+    return <Navigate to="/mediator-dashboard" replace />;
+  }
+  return <Home />;
+};
+
 const Router = () => {
   return (
     <Routes>
-        <Route path='/' element={<Navigate to='/home' />} />
-        <Route path='/home' element={<Home />} />
+        <Route path='/' element={<RootRedirect />} />
+        <Route path='/home' element={<RoleBasedHome />} />
         
         {/* User Account Routes */}
         <Route path='/my-account' element={
