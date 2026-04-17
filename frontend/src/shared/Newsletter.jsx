@@ -1,19 +1,67 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { toast } from "react-toastify";
-import { FiSend, FiMail, FiCheck } from "react-icons/fi";
+import { FiSend, FiMail, FiX } from "react-icons/fi";
+import BASE_URL from "../utils/config";
+import { AuthContext } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const Newsletter = () => {
+  const { user } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isLoadingStatus, setIsLoadingStatus] = useState(false);
 
-  const handleSubmit = async (e) => {
+  useEffect(() => {
+    if (user && user.email) {
+      setEmail(user.email);
+      checkSubscriptionStatus(user.email);
+    }
+  }, [user]);
+
+  const checkSubscriptionStatus = async (userEmail) => {
+    setIsLoadingStatus(true);
+    try {
+      const res = await fetch(`${BASE_URL}/subscribe/status/${userEmail}`);
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIsSubscribed(data.isSubscribed);
+      }
+    } catch (error) {
+      console.error("Error fetching subscription status:", error);
+    } finally {
+      setIsLoadingStatus(false);
+    }
+  };
+
+  const handleToggle = async (e) => {
     e.preventDefault();
+    if (!user) {
+      toast.error("Please login to subscribe");
+      return;
+    }
+    
     setIsSubmitting(true);
-    setTimeout(() => {
-      toast.success("Successfully subscribed to newsletter!");
-      setEmail("");
+    try {
+      const response = await fetch(`${BASE_URL}/subscribe/toggle`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user.email }),
+      });
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast.success(data.message);
+        setIsSubscribed(data.isSubscribed);
+      } else {
+        toast.error(data.message || "Something went wrong.");
+      }
+    } catch (error) {
+      console.error("Subscription Error:", error);
+      toast.error("Failed to update subscription. Please try again.");
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -44,44 +92,49 @@ const Newsletter = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <div className="relative">
-            <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="form-input !pl-11"
-            />
+        {!user ? (
+          <div className="text-center py-4 bg-background border border-border-light rounded-lg">
+            <p className="text-text-secondary mb-3">Login to subscribe to our newsletter</p>
+            <Link to="/login" className="btn-primary inline-block">
+              Login Now
+            </Link>
           </div>
+        ) : (
+          <form onSubmit={handleToggle} className="space-y-3">
+            <div className="relative">
+              <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+              <input
+                type="email"
+                value={email}
+                readOnly
+                className="form-input !pl-11 bg-background text-text-muted cursor-not-allowed border-border-light"
+              />
+            </div>
 
-          {email && !email.includes("@") && email.length > 3 && (
-            <p className="text-caption text-danger flex items-center gap-1.5">
-              <span className="w-1 h-1 bg-danger rounded-full" />
-              Please enter a valid email address
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full btn-cta"
-          >
-            {isSubmitting ? (
-              <>
-                <span className="spinner-cta" />
-                Subscribing...
-              </>
-            ) : (
-              <>
-                Subscribe Now
-                <FiSend className="w-4 h-4" />
-              </>
-            )}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={isSubmitting || isLoadingStatus}
+              className={`w-full ${isSubscribed ? "btn-secondary !text-danger !border-danger hover:!bg-danger/10" : "btn-cta"}`}
+            >
+              {isSubmitting || isLoadingStatus ? (
+                <>
+                  <span className="spinner-cta" />
+                  {isSubscribed ? "Unsubscribing..." : "Subscribing..."}
+                </>
+              ) : isSubscribed ? (
+                <>
+                  Unsubscribe
+                  <FiX className="w-4 h-4" />
+                </>
+              ) : (
+                <>
+                  Subscribe Now
+                  <FiSend className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+        )}
 
         {/* Footer */}
         <div className="mt-4 pt-4 border-t border-border-light">

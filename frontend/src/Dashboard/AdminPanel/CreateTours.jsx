@@ -178,22 +178,6 @@ const CreateTours = () => {
                 />
               </div>
 
-              {/* Photo URL */}
-              <div className="md:col-span-2">
-                <label className="form-label">Photo URL <span className="text-danger">*</span></label>
-                <div className="relative">
-                  <FiImage className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
-                  <input
-                    type="text"
-                    name="photo"
-                    value={formData.photo}
-                    onChange={handleInput}
-                    required
-                    className="form-input !pl-11 text-sm font-mono text-text-secondary"
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </div>
-              </div>
             </div>
 
             {/* Featured */}

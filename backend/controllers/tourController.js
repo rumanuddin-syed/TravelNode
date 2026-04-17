@@ -1,4 +1,7 @@
 import Tour from "../models/Tour.js";
+import Subscriber from "../models/Subscriber.js";
+import { sendNewTourEmail } from "../utils/sendEmail.js";
+import { fetchDestinationImages } from "../utils/unsplash.js";
 
 const getAllTours = async (req, res) => {
   const page = parseInt(req.query.page);
@@ -38,8 +41,15 @@ const getSingleTour = async (req, res) => {
 
 const createTour = async (req, res) => {
   try {
-    const { title, city, desc, maxGroupSize, photo, address, price, distance,featured } =
+    const { title, city, desc, maxGroupSize, address, price, distance, featured } =
       req.body;
+    let { photo } = req.body;
+
+    if (!photo) {
+      const images = await fetchDestinationImages(city || title, 1);
+      // provide a default fallback travel image if fetch fails
+      photo = images && images.length > 0 ? images[0] : "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
+    }
 
     const newTour = new Tour({
       title,
@@ -53,6 +63,16 @@ const createTour = async (req, res) => {
       featured
     });
     await newTour.save();
+
+    // Trigger emails asynchronously
+    Subscriber.find({ status: "subscribed" })
+      .then((subscribers) => {
+        const emails = subscribers.map((sub) => sub.email);
+        if (emails.length > 0) {
+          sendNewTourEmail(emails, newTour).catch(console.error);
+        }
+      })
+      .catch(console.error);
 
     res
       .status(201)
